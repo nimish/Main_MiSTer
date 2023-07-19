@@ -1,36 +1,7 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/inotify.h>
-#include <sys/poll.h>
-#include <sys/sysinfo.h>
-#include <dirent.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <linux/input.h>
-#include <linux/uinput.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <stdarg.h>
 
+#include <sys/poll.h>
+#include <cstdint>
 #include "input.h"
-#include "user_io.h"
-#include "menu.h"
-#include "hardware.h"
-#include "cfg.h"
-#include "fpga_io.h"
-#include "osd.h"
-#include "video.h"
-#include "audio.h"
-#include "joymapping.h"
-#include "support.h"
-#include "profiling.h"
-#include "gamecontroller_db.h"
-#include "str_util.h"
 
 #define NUMDEV 30
 #define NUMPLAYERS 6

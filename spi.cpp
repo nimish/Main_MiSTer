@@ -1,5 +1,4 @@
 #include "spi.h"
-#include "hardware.h"
 #include "fpga_io.h"
 
 #define SSPI_FPGA_EN (1<<18)

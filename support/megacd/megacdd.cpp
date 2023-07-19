@@ -1,12 +1,11 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <time.h>
 
+#include <cstring>
+#include <cstdlib>
+#include "libchdr/cdrom.h"
+#include "../../support/chd/mister_chd.h"
 #include "megacd.h"
-#include "../chd/mister_chd.h"
+#include "../../cd.h"
 
 cdd_t cdd;
 

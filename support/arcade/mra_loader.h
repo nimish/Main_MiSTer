@@ -1,5 +1,6 @@
 #ifndef ROMUTILS_H_
 #define ROMUTILS_H_
+#include <cstdint>
 
 int arcade_send_rom(const char *xml);
 int xml_load(const char *xml);

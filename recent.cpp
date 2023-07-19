@@ -1,16 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <limits.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cstring>
 
-#include "file_io.h"
-#include "user_io.h"
-#include "osd.h"
 #include "cfg.h"
+#include "file_io.h"
+#include "osd.h"
 #include "recent.h"
+#include "user_io.h"
 
 #define RECENT_MAX 16
 
@@ -37,8 +32,8 @@ static int recent_available()
 static char* recent_create_config_name(int idx)
 {
 	static char str[256];
-	sprintf(str, "cores_recent.cfg");
-	if (idx >= 0) sprintf(str, "%s_recent_%d.cfg", user_io_get_core_name(), idx);
+	snprintf(str, sizeof(str), "cores_recent.cfg");
+	if (idx >= 0) snprintf(str, sizeof(str), "%s_recent_%d.cfg", user_io_get_core_name(), idx);
 	return str;
 }
 

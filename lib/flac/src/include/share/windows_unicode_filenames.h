@@ -49,7 +49,7 @@ FLAC__bool flac_internal_get_utf8_filenames(void);
 #define flac_get_utf8_filenames flac_internal_get_utf8_filenames
 
 FILE* flac_internal_fopen_utf8(const char *filename, const char *mode);
-int flac_internal_stat64_utf8(const char *path, struct __stat64 *buffer);
+int flac_internal_stat_utf8(const char *path, struct __stat *buffer);
 int flac_internal_chmod_utf8(const char *filename, int pmode);
 int flac_internal_utime_utf8(const char *filename, struct utimbuf *times);
 int flac_internal_unlink_utf8(const char *filename);

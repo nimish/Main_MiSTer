@@ -1,10 +1,6 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <stddef.h>
-#include <limits.h>
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
 
 #include "buffer.h"
 

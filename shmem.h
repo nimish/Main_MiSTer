@@ -1,8 +1,8 @@
 
-#include <stdint.h>
 
 #ifndef SHMEM_H
 #define SHMEM_H
+#include <cstdint>
 
 void *shmem_map(uint32_t address, uint32_t size);
 int shmem_unmap(void* map, uint32_t size);

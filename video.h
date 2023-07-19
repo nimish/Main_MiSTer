@@ -1,5 +1,7 @@
 #ifndef VIDEO_H
 #define VIDEO_H
+#include <cstddef>
+#include <cstdint>
 
 #define VFILTER_HORZ 0
 #define VFILTER_VERT 1

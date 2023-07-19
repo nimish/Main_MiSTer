@@ -1,19 +1,17 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cstdint>
 
 #include "../../file_io.h"
 #include "../../user_io.h"
 #include "../../spi.h"
-#include "../../hardware.h"
 #include "../../menu.h"
 #include "psx.h"
 #include "mcdheader.h"
 #include "../../cd.h"
-#include "../chd/mister_chd.h"
-#include <libchdr/chd.h>
+#include "libchdr/chd.h"
 
 static char buf[1024];
 static uint8_t chd_hunkbuf[CD_FRAME_SIZE * CD_FRAMES_PER_HUNK];
@@ -280,7 +278,7 @@ static int load_cue(const char* filename, toc_t *table)
 		{
 			if (!table->tracks[table->last].f.opened())
 			{
-        table->tracks[table->last].start = bb+ss*75+mm*60*75; 
+        table->tracks[table->last].start = bb+ss*75+mm*60*75;
         if (table->tracks[table->last].pregap)
           table->tracks[table->last].start += pregap;
         //Subtract the fake 150 sector pregap used for the first data track
@@ -496,14 +494,14 @@ void psx_read_cd(uint8_t *buffer, int lba, int cnt)
 					}
 					while (cnt)
 					{
-            if (toc.tracks[i+1].pregap && lba > (toc.tracks[i+1].start-toc.tracks[i+1].index1)) 
+            if (toc.tracks[i+1].pregap && lba > (toc.tracks[i+1].start-toc.tracks[i+1].index1))
             {
               //The TOC is setup so that pregap sectors are actually part of the
               //PREVIOUS track. If the pregap field is set the file doesn't contain
-              //this data, so we have to fake it. 
+              //this data, so we have to fake it.
               //Check the next track's pregap and index1 values to determine
               //if we're reading pregap sectors
-              
+
 
               memset(buffer, 0x0, CD_SECTOR_LEN);
             }
@@ -724,7 +722,7 @@ void psx_mount_cd(int f_index, int s_index, const char *filename)
 						int bios_loaded = 0;
 
 						// load cd_bios.rom from game directory
-						sprintf(buf, "%s/", last_dir);
+						snprintf(buf, sizeof(buf),"%s/", last_dir);
 						p = strrchr(buf, '/');
 						if (p)
 						{
@@ -755,7 +753,7 @@ void psx_mount_cd(int f_index, int s_index, const char *filename)
 			bool has_sbi_file = false;
 
 			// search for .sbi file in PSX/sbi.zip
-			sprintf(buf, "%s/sbi.zip/%s.sbi", HomeDir(), game_id);
+			snprintf(buf, sizeof(buf), "%s/sbi.zip/%s.sbi", HomeDir(), game_id);
 			has_sbi_file = (FileOpen(&sbi_file, buf, 1));
 
 			if (!has_sbi_file)

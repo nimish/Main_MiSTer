@@ -1,21 +1,21 @@
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
 #include <dirent.h>
-#include <ctype.h>
-
-#include "../../sxmlc.h"
-#include "../../user_io.h"
-#include "../../input.h"
-#include "../../file_io.h"
-#include "../../menu.h"
-#include "../../fpga_io.h"
-#include "../../lib/md5/md5.h"
-#include "../../shmem.h"
+#include <unistd.h>
 
 #include "buffer.h"
+#include "md5.h"
 #include "mra_loader.h"
+#include "../../user_io.h"
+#include "../../file_io.h"
+#include "../../fpga_io.h"
+
+#include "../../sxmlc.h"
+#include "../../menu.h"
+#include "../../shmem.h"
+#include "../../input.h"
 
 #define kBigTextSize 1024
 struct arc_struct {
@@ -76,7 +76,7 @@ void arcade_nvm_save()
 			user_io_set_upload(0);
 
 			FileSave(path, buf, nvram_size);
-			delete(buf);
+			delete[](buf);
 		}
 	}
 }
@@ -101,7 +101,7 @@ static void arcade_nvm_load()
 				user_io_set_download(0);
 			}
 
-			delete(buf);
+			delete[](buf);
 		}
 	}
 }
@@ -207,7 +207,7 @@ static int rom_checksz(int idx, int chunk)
 {
 	if ((romlen[idx] + chunk) > romblkl)
 	{
-	        if (romlen[idx] + chunk > romblkl + BLKL)
+	    if (romlen[idx] + chunk > romblkl + BLKL)
 		  romblkl += (chunk + BLKL);
 		else
 		  romblkl += BLKL;
@@ -335,7 +335,7 @@ static void rom_finish(int send, uint32_t address, int index)
 			else
 			{
 				char str[32];
-				sprintf(str, "ROM #%d", index);
+				snprintf(str, sizeof(str), "ROM #%d", index);
 
 				ProgressMessage(0, 0, 0, 0);
 				while (romlen[0] > 0)
@@ -393,7 +393,7 @@ unsigned char* hexstr_to_char(const char* hexstr, size_t *out_len)
 	size_t len = strlen(hexstr);
 	unsigned char* chrs = (unsigned char*)malloc(len + 1);
 	if (!chrs)
-		printf("hexstr_to_char: malloc failed len+1=%d\n",len+1);
+		printf("hexstr_to_char: malloc failed len+1=%zu\n",len+1);
 	int dest = 0;
 	// point to the beginning of the array
 	const char *ptr = hexstr;
@@ -528,7 +528,7 @@ static int xml_send_rom(XMLEvent evt, const XMLNode* node, SXML_CHAR* text, cons
 			if (!strcasecmp(node->attributes[i].name, "index") && !strcasecmp(node->tag, "rom"))
 			{
 				arc_info->romindex = atoi(node->attributes[i].value);
-				sprintf(message, "Assembling ROM #%d", arc_info->romindex);
+				snprintf(message, sizeof(message),"Assembling ROM #%d", arc_info->romindex);
 			}
 			if (!strcasecmp(node->attributes[i].name, "address") && !strcasecmp(node->tag, "rom"))
 			{
@@ -619,7 +619,7 @@ static int xml_send_rom(XMLEvent evt, const XMLNode* node, SXML_CHAR* text, cons
 				{
 					if (!strcasecmp(node->attributes[i].name, "name"))
 					{
-						snprintf(sw->dip[sw->dip_num].name, sizeof(sw->dip[sw->dip_num].name), node->attributes[i].value);
+						snprintf(sw->dip[sw->dip_num].name, sizeof(sw->dip[sw->dip_num].name), "%s", node->attributes[i].value);
 					}
 
 					if (!strcasecmp(node->attributes[i].name, "bits"))
@@ -651,7 +651,7 @@ static int xml_send_rom(XMLEvent evt, const XMLNode* node, SXML_CHAR* text, cons
 							size_t len = p ? p - val : strlen(val);
 							size_t sz = len + 1;
 							if (sz > sizeof(sw->dip[0].id[0])) sz = sizeof(sw->dip[0].id[0]);
-							snprintf(sw->dip[sw->dip_num].id[n], sz, val);
+							snprintf(sw->dip[sw->dip_num].id[n], sz, "%s", val);
 							val += len;
 							if (*val == ',') val++;
 							n++;
@@ -774,7 +774,7 @@ static int xml_send_rom(XMLEvent evt, const XMLNode* node, SXML_CHAR* text, cons
 				char *p = hex;
 				for (int i = 0; i < 16; i++)
 				{
-					sprintf(p, "%02x", (unsigned int)checksum[i]);
+					snprintf(p, sizeof(hex), "%02x", (unsigned int)checksum[i]);
 					p += 2;
 				}
 
@@ -856,7 +856,7 @@ static int xml_send_rom(XMLEvent evt, const XMLNode* node, SXML_CHAR* text, cons
 				int result = 0;
 				while ((zipname = strsep(&zipptr, "|")) != NULL)
 				{
-					sprintf(fname, (zipname[0] == '/') ? "%s%s/%s" : "%s/mame/%s/%s", root, zipname, arc_info->partname);
+					snprintf(fname, sizeof(fname), (zipname[0] == '/') ? "%s%s/%s" : "%s/mame/%s/%s", root, zipname, arc_info->partname);
 
 					if(unitlen>1) printf("file: %s, start=%d, len=%d, map(%d)=%X\n", fname, start, length, unitlen, arc_info->imap);
 					else printf("file: %s, start=%d, len=%d\n", fname, start, length);
@@ -1054,7 +1054,7 @@ int arcade_send_rom(const char *xml)
 	if (ext) strcpy(ext, ".dip");
 	memcpy(switches[1].name, switches[0].name, sizeof(switches[1].name));
 
-	snprintf(nvram_name, sizeof(nvram_name), p);
+	snprintf(nvram_name, sizeof(nvram_name), "%s", p);
 	ext = strcasestr(nvram_name, ".mra");
 	if (ext) strcpy(ext, ".nvm");
 
@@ -1070,7 +1070,7 @@ int arcade_send_rom(const char *xml)
 	arc_info.data = buffer_init(kBigTextSize);
 	arc_info.error_msg[0] = 0;
 	arc_info.validrom0 = 0;
-	struct stat64 *st = getPathStat(xml);
+	struct stat *st = getPathStat(xml);
 	if (st) arc_info.file_size = (int)st->st_size;
 	ProgressMessage(0, 0, 0, 0);
 

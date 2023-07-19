@@ -1,5 +1,6 @@
 #ifndef CHEATS_H
 #define CHEATS_H
+#include <cstdint>
 
 void cheats_init(const char *rom_path, uint32_t romcrc);
 int cheats_available();

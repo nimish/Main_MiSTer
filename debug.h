@@ -2,9 +2,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include "hardware.h"
-
-
+#include <cstdio>
 // ------------ generic debugging -----------
 #if 0
 #define menu_debugf(...) printf(__VA_ARGS__)

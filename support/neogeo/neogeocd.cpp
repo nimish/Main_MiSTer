@@ -1,15 +1,9 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
+#include <cstdint>
 
-#include "../../file_io.h"
 #include "../../user_io.h"
 #include "../../spi.h"
 #include "../../hardware.h"
-#include "../../menu.h"
-#include "../../cheats.h"
 #include "../megacd/megacd.h"
 #include "neogeocd.h"
 #include "neogeo_loader.h"

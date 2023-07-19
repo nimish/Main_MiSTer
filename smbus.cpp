@@ -215,7 +215,7 @@ int i2c_open(int dev_address, int is_smbus)
 	for (int bus = 0; bus < 3; bus++)
 	{
 		int fd;
-		sprintf(str, "/dev/i2c-%d", bus);
+		snprintf(str, sizeof(str),"/dev/i2c-%d", bus);
 
 		if ((fd = open(str, O_RDWR | O_CLOEXEC)) < 0)
 		{

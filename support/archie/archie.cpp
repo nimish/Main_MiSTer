@@ -1,15 +1,14 @@
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+
+#include <cstring>
+#include <ctime>
 
 #include "../../hardware.h"
-#include "../../fpga_io.h"
-#include "../../menu.h"
-#include "../../debug.h"
 #include "../../user_io.h"
 #include "../../input.h"
 #include "../../support.h"
 #include "../../ide.h"
+
+#include "../../spi.h"
 #include "archie.h"
 
 #define CONFIG_FILENAME  "ARCHIE.CFG"
@@ -299,7 +298,7 @@ void archie_init()
 
 	// set config defaults
 	config.system_ctrl = 0;
-	snprintf(config.rom_img, 1024, user_io_make_filepath(HomeDir(), "RISCOS.ROM"));
+	snprintf(config.rom_img, 1024, "%s", user_io_make_filepath(HomeDir(), "RISCOS.ROM"));
 
 	// try to load config from card
 	int size = FileLoadConfig(CONFIG_FILENAME, 0, 0);
@@ -310,7 +309,7 @@ void archie_init()
 			FileLoadConfig(CONFIG_FILENAME, &config, sizeof(archie_config_t));
 		}
 		else
-			archie_debugf("Unexpected config size %d != %d", size, sizeof(archie_config_t));
+			archie_debugf("Unexpected config size %d != %lu", size, sizeof(archie_config_t));
 	}
 	else
 		archie_debugf("No %s config found", CONFIG_FILENAME);

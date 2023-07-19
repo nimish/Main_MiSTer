@@ -17,13 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ctype.h>
-#include <time.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdint.h>
+#include <chrono>
+#include <cctype>
+#include <cstdint>
+#include <cstdio>
 #include "hardware.h"
-#include "user_io.h"
 
 uint8_t rstval = 0;
 
@@ -52,17 +50,9 @@ void hexdump(void *data, uint16_t size, uint16_t offset)
 
 unsigned long GetTimer(unsigned long offset)
 {
-	struct timespec tp;
-
-  	clock_gettime(CLOCK_BOOTTIME, &tp);
-
-	uint64_t res;
-
-	res = tp.tv_sec;
-	res *= 1000;
-	res += (tp.tv_nsec / 1000000);
-
-	return (unsigned long)(res + offset);
+	auto now= std::chrono::steady_clock::now();
+	auto then = now + std::chrono::milliseconds(offset);
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(then.time_since_epoch()).count();
 }
 
 unsigned long CheckTimer(unsigned long time)

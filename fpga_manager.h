@@ -8,6 +8,8 @@
 #ifndef	_FPGA_MANAGER_H_
 #define	_FPGA_MANAGER_H_
 
+#include <stdint.h>
+
 struct socfpga_fpga_manager {
 	/* FPGA Manager Module */
 	uint32_t	stat;			/* 0x00 */

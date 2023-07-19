@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <inttypes.h>
+#include <cstdint>
 
 void SelectFile(const char* path, const char* pFileExt, int Options, unsigned char MenuSelect, unsigned char MenuCancel);
 

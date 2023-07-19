@@ -1,3 +1,4 @@
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +14,7 @@
 #include <math.h>
 
 #include "hardware.h"
+#include "sxmlc.h"
 #include "user_io.h"
 #include "spi.h"
 #include "cfg.h"
@@ -2044,6 +2046,7 @@ static void set_vrr_mode()
 		0xCD, (uint8_t)(vrateh_i & 0xFF),
 	};
 
+
 	int res = 0;
 	int fd = i2c_open(0x38, 0);
 	if (fd >= 0)
@@ -2089,6 +2092,38 @@ static void set_vrr_mode()
 		else
 		{
 			hdmi_config_set_spare(0, false);
+		}
+
+		if(use_allm) {
+			uint8_t hf_vsif_allm[] = {
+				0xE0, 0x81,
+				0xE1, 0x01,
+				0xE2, 0x05, // length of packet not including the 3 byte header and 1 byte checksum
+				/*0xE3, <CHECKSUM> -- computed automatically?*/
+				0xE4, 0xd8, // magic numbers?
+				0xE5, 0x5d,
+				0xE6, 0xc4,
+				0xE7, 0x01, // required
+				0xE8, 0x02, // ALLM bit
+			};
+			hdmi_config_set_spare(1, true);
+			res = i2c_smbus_write_byte_data(fd, 0xFF, 0b10000000);
+			if (res < 0)
+			{
+				printf("i2c: Vrr: Couldn't update Spare Packet change register (0xEF, 0x80) %d\n", res);
+			}
+
+			for (uint i = 0; i < sizeof(vesa_data); i += 2)
+			{
+				res = i2c_smbus_write_byte_data(fd, hf_vsif_allm[i], hf_vsif_allm[i + 1]);
+				if (res < 0) printf("i2c: Vrr register write error (%02X %02x): %d\n", hf_vsif_allm[i], hf_vsif_allm[i + 1], res);
+			}
+			res = i2c_smbus_write_byte_data(fd, 0xFF, 0x00);
+			if (res < 0) printf("i2c: Vrr: Couldn't update Spare Packet change register (0xDF, 0x00), %d\n", res);
+
+		} else {
+			hdmi_config_set_spare(1, false);
+
 		}
 		i2c_close(fd);
 	}
@@ -2367,9 +2402,9 @@ static void video_mode_load()
 
 static void video_cfg_init()
 {
-	sprintf(gamma_cfg_path, "%s_gamma.cfg", user_io_get_core_name());
-	sprintf(scaler_cfg_path, "%s_scaler.cfg", user_io_get_core_name());
-	sprintf(shadow_mask_cfg_path, "%s_shmask.cfg", user_io_get_core_name());
+	snprintf(gamma_cfg_path, sizeof(gamma_cfg_path), "%s_gamma.cfg", user_io_get_core_name());
+	snprintf(scaler_cfg_path, sizeof(scaler_cfg_path), "%s_scaler.cfg", user_io_get_core_name());
+	snprintf(shadow_mask_cfg_path, sizeof(shadow_mask_cfg_path), "%s_shmask.cfg", user_io_get_core_name());
 
 	memset(gamma_cfg, 0, sizeof(gamma_cfg));
 	memset(scaler_flt, 0, sizeof(scaler_flt));
@@ -2749,7 +2784,7 @@ static void set_yc_mode()
 		int COLORBURST_RANGE = (COLORBURST_START << 10) | COLORBURST_END;
 
 		char yc_key[64];
-		sprintf(yc_key, "%s_%.1f%s%s", user_io_get_core_name(1), fps, current_video_info.interlaced ? "i" : "", (pal || !cfg.ntsc_mode) ? "" : (cfg.ntsc_mode == 1) ? "s" : "m");
+		snprintf(yc_key, sizeof(yc_key), "%s_%.1f%s%s", user_io_get_core_name(1), fps, current_video_info.interlaced ? "i" : "", (pal || !cfg.ntsc_mode) ? "" : (cfg.ntsc_mode == 1) ? "s" : "m");
 		printf("Calculated YC parameters for '%s': %s PHASE_INC=%lld, COLORBURST_START=%d, COLORBURST_END=%d\n", yc_key, pal ? "PAL" : (cfg.ntsc_mode == 1) ? "PAL60" : (cfg.ntsc_mode == 2) ? "PAL-M" : "NTSC", PHASE_INC, COLORBURST_START, COLORBURST_END);
 
 		for (uint i = 0; i < sizeof(yc_modes) / sizeof(yc_modes[0]); i++)
@@ -3247,7 +3282,7 @@ static Imlib_Image load_bg()
 		char *p = strrchr(label, '.');
 		if (p) *p = 0;
 
-		sprintf(bgdir, "wallpapers%s", label);
+		snprintf(bgdir, sizeof(bgdir), "wallpapers%s", label);
 		if (alt <= 0 || !cfg_name[0] || !PathIsDir(bgdir)) strcpy(bgdir, "wallpapers");
 
 		if (PathIsDir(bgdir))
@@ -3638,7 +3673,7 @@ void video_cmd(char *cmd)
 			if (cmd[6] != '2')
 			{
 				static char cmd[256];
-				sprintf(cmd, "echo %d %d %d %d %d >/sys/module/MiSTer_fb/parameters/mode", fmt, rb, width, height, stride);
+				snprintf(cmd, sizeof(cmd), "echo %d %d %d %d %d >/sys/module/MiSTer_fb/parameters/mode", fmt, rb, width, height, stride);
 				system(cmd);
 			}
 		}

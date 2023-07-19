@@ -1,9 +1,9 @@
-#include "offload.h"
+
 #include "profiling.h"
+#include <cstdint>
 #include <pthread.h>
-#include <inttypes.h>
-#include <string.h>
-#include <stdio.h>
+#include <functional>
+#include <sched.h>
 
 static constexpr uint32_t QUEUE_SIZE = 8;
 
@@ -38,7 +38,7 @@ static void *worker_thread(void *)
 
 			// wait for work signal
 			pthread_cond_wait(&s_cond_work, &s_queue_lock);
-			
+
 			// quit flag was set and queue still empty, quit
 			if (s_quit && (s_queue_head == s_queue_tail))
 			{

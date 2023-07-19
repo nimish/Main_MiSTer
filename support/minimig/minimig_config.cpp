@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <cstddef>
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -13,6 +14,8 @@
 #include "../../input.h"
 #include "../../cfg.h"
 #include "../../ide.h"
+#include "../../spi.h"
+
 #include "minimig_boot.h"
 #include "minimig_fdd.h"
 #include "minimig_config.h"
@@ -276,8 +279,8 @@ static char UploadActionReplay()
 static char* GetConfigurationName(int num, int chk)
 {
 	static char name[128];
-	if (num) sprintf(name, CONFIG_DIR "/%s%d.cfg", user_io_get_core_name(), num);
-	else sprintf(name, CONFIG_DIR "/%s.cfg", user_io_get_core_name());
+	if (num) snprintf(name, sizeof(name), CONFIG_DIR "/%s%d.cfg", user_io_get_core_name(), num);
+	else snprintf(name, sizeof(name), CONFIG_DIR "/%s.cfg", user_io_get_core_name());
 
 	if (chk && !S_ISREG(getFileType(name))) return 0;
 	return name+strlen(CONFIG_DIR)+1;
@@ -461,7 +464,7 @@ int minimig_cfg_load(int num)
 			}
 			else printf("Cannot load configuration file\n");
 		}
-		else printf("Wrong configuration file size: %d (expected: %u)\n", size, sizeof(minimig_config));
+		else printf("Wrong configuration file size: %d (expected: %lu)\n", size, sizeof(minimig_config));
 	}
 	if (!result) {
 		BootPrint("Can not open configuration file!\n");
@@ -495,7 +498,7 @@ int minimig_cfg_load(int num)
 
 	// print config to boot screen
 	char cfg_str[256];
-	sprintf(cfg_str, "CPU: %s, Chipset: %s, ChipRAM: %s, FastRAM: %s, SlowRAM: %s",
+	snprintf(cfg_str, sizeof(cfg_str), "CPU: %s, Chipset: %s, ChipRAM: %s, FastRAM: %s, SlowRAM: %s",
 		config_cpu_msg[minimig_config.cpu & 0x03], config_chipset_msg[(minimig_config.chipset >> 2) & 7],
 		config_memory_chip_msg[(minimig_config.memory >> 0) & 0x03], config_memory_fast_msg[(minimig_config.cpu >> 1) & 1][((minimig_config.memory >> 4) & 0x03) | ((minimig_config.memory & 0x80) >> 5)], config_memory_slow_msg[(minimig_config.memory >> 2) & 0x03]
 	);
@@ -528,7 +531,7 @@ void minimig_reset()
 
 void minimig_set_kickstart(char *name)
 {
-	uint len = strlen(name);
+	size_t len = strlen(name);
 	if (len > (sizeof(minimig_config.kickstart) - 1)) len = sizeof(minimig_config.kickstart) - 1;
 	memcpy(minimig_config.kickstart, name, len);
 	minimig_config.kickstart[len] = 0;
@@ -601,7 +604,7 @@ void minimig_adjust_vsize(char force)
 		uint32_t mode = scr_hsize | (scr_vsize << 12) | ((res & 0xFF) << 24);
 		if (mode)
 		{
-			for (uint i = 0; i < sizeof(vmodes_adj) / sizeof(vmodes_adj[0]); i++)
+			for (size_t i = 0; i < sizeof(vmodes_adj) / sizeof(vmodes_adj[0]); i++)
 			{
 				if (vmodes_adj[i].mode == mode)
 				{
@@ -648,7 +651,7 @@ static void store_vsize()
 	{
 		int applied = 0;
 		int empty = -1;
-		for (int i = 0; (uint)i < sizeof(vmodes_adj) / sizeof(vmodes_adj[0]); i++)
+		for (size_t i = 0; i < sizeof(vmodes_adj) / sizeof(vmodes_adj[0]); i++)
 		{
 			if (vmodes_adj[i].mode == mode)
 			{

@@ -593,7 +593,7 @@ bool cfg_check_errors(char *msg, size_t max_len)
 void cfg_print()
 {
 	printf("Loaded config:\n--------------\n");
-	for (uint i = 0; i < (sizeof(ini_vars) / sizeof(ini_vars[0])); i++)
+	for (size_t i = 0; i < (sizeof(ini_vars) / sizeof(ini_vars[0])); i++)
 	{
 		switch (ini_vars[i].type)
 		{

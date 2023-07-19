@@ -29,9 +29,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-#include "stdio.h"
-#include "string.h"
-#include "malloc.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "../../hardware.h"
@@ -39,7 +38,6 @@
 #include "sharpmz.h"
 #include "../../osd.h"
 #include "../../menu.h"
-#include "../../debug.h"
 #include "../../user_io.h"
 
 // Names of the supported machines.

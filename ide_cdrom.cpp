@@ -1,25 +1,18 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <fcntl.h>
-#include <time.h>
-#include <ios>
-#include <fstream>
-#include <iostream>
+#include <cstring>
 #include <string>
+#include <fstream>
 #include <sstream>
 #include <sys/stat.h>
 #include <cmath>
 #include <libchdr/chd.h>
 #include <byteswap.h>
-#include "spi.h"
-#include "user_io.h"
 #include "file_io.h"
+
 #include "hardware.h"
-#include "cd.h"
-#include "ide.h"
+#include "ide_cdrom.h"
+#include "libchdr/cdrom.h"
+#include "libchdr/chd.h"
+#include "support/chd/mister_chd.h"
 
 #if 0
 #define dbg_printf     printf
@@ -43,9 +36,9 @@
 #define CD_FPS 75
 #define MSF_TO_FRAMES(M, S, F) ((M)*60*CD_FPS+(S)*CD_FPS+(F))
 
-#define CD_ERR_NO_DISK 2 
-#define CD_ERR_ILLEGAL_REQUEST 5 
-#define CD_ERR_UNIT_ATTENTION 6 
+#define CD_ERR_NO_DISK 2
+#define CD_ERR_ILLEGAL_REQUEST 5
+#define CD_ERR_UNIT_ATTENTION 6
 
 #define CD_ASC_CODE_COMMAND_SEQUENCE_ERR 0x2C
 #define CD_ASC_CODE_ILLEGAL_OPCODE 0x20
@@ -1153,7 +1146,7 @@ static int get_sense(drive_t *drv)
 static bool pause_resume(drive_t *drv, uint8_t *cmdbuf)
 {
 	bool resume = !!(cmdbuf[8] & 1);
-	if (drv->playing) 
+	if (drv->playing)
 	{
 		drv->paused = !resume;
 		return true;
@@ -1256,7 +1249,7 @@ void cdrom_handle_pkt(ide_config *ide)
 	int err = 0;
 
 	//See MMC-5 section 4.1.6.1
-	//If the no disk/load state isn't "done", most commands need to return CHECK CONDITION+sense data. 
+	//If the no disk/load state isn't "done", most commands need to return CHECK CONDITION+sense data.
 	//The only commands that ignore this are the ones listed below.
 	//GET CONFIG ,GET EVENT STATUS NOTIFICATION, INQUIRY, REQUEST SENSE
 	//0x46, 0x4A, 0x12, 0x3h
@@ -1347,10 +1340,10 @@ void cdrom_handle_pkt(ide_config *ide)
 
 	case 0x43: // read TOC
 		dbg_printf("** Read TOC\n");
-		if (!drv->load_state) 
+		if (!drv->load_state)
 		{
 			pkt_send(ide, ide_buf, read_toc(drv, cmdbuf));
-		} 
+		}
 		else cdrom_nodisk(ide);
 		break;
 
@@ -1598,7 +1591,7 @@ void ide_cdda_send_sector()
 			track_t *read_track = track;
 			if (is_index0 && track->number > 1)
 			{
-				//track number is 1-based, track array is zero. 
+				//track number is 1-based, track array is zero.
 				read_track = &drv->track[track->number-2];
 
 			}

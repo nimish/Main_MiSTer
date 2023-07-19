@@ -1,23 +1,19 @@
-#include <inttypes.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
-#include <dirent.h>
-#include <time.h>
+
 
 #include <map>
 #include <string>
-#include <vector>
+#include <sys/fcntl.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <dirent.h>
 
-#include "../../hardware.h"
 #include "../../file_io.h"
 #include "../../user_io.h"
-#include "../../spi.h"
 #include "../../cfg.h"
 #include "../../shmem.h"
 #include "miminig_fs_messages.h"
+
+
 
 #define SHMEM_ADDR      0x27FF4000
 #define SHMEM_SIZE      0x2000
@@ -50,7 +46,7 @@ struct lock
 {
 	uint16_t mode;
 	std::string path;
-	std::vector<dirent64> dir_items;
+	std::vector<dirent> dir_items;
 };
 
 static std::map<uint32_t, lock> locks;
@@ -432,8 +428,7 @@ static int process_request(void *reqres_buffer)
 						break;
 					}
 
-					struct dirent64 *de;
-					while ((de = readdir64(d)))
+					while (auto de = readdir(d))
 					{
 						if (!strcmp(de->d_name, "..") || !strcmp(de->d_name, ".")) continue;
 						locks[key].dir_items.push_back(*de);
@@ -478,7 +473,7 @@ static int process_request(void *reqres_buffer)
 			time_t time = 0;
 			uint32_t size = 0;
 
-			struct stat64 *st = getPathStat(name);
+			struct stat *st = getPathStat(name);
 			if (st)
 			{
 				time = st->st_mtime;
@@ -525,8 +520,8 @@ static int process_request(void *reqres_buffer)
 			time_t time = 0;
 			uint32_t size = 0;
 
-			struct stat64 st;
-			if (fstat64(fileno(open_file_handles[key].filp), &st) == 0)
+			struct stat st;
+			if (fstat(fileno(open_file_handles[key].filp), &st) == 0)
 			{
 				time = st.st_mtime;
 				if (st.st_mode & S_IFDIR) type = ST_USERDIR;

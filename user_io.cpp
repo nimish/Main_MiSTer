@@ -1,21 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <fcntl.h>
-#include <time.h>
-#include <limits.h>
-#include <ctype.h>
+#include <cctype>
+#include <climits>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "lib/imlib2/Imlib2.h"
 
 #include "hardware.h"
 #include "osd.h"
 #include "user_io.h"
-#include "debug.h"
 #include "spi.h"
 #include "cfg.h"
 #include "input.h"
@@ -152,7 +146,7 @@ void user_io_name_override(const char* name)
 
 void user_io_set_core_name(const char *name)
 {
-	snprintf(core_name, sizeof(core_name), name);
+	snprintf(core_name, sizeof(core_name), "%s", name);
 	printf("Core name set to \"%s\"\n", core_name);
 }
 
@@ -662,7 +656,7 @@ static void parse_config()
 						}
 						else
 						{
-							sprintf(uart_speed_labels[i], "%d", uart_speeds[i]);
+							snprintf(uart_speed_labels[i], sizeof(uart_speed_labels[i]), "%d", uart_speeds[i]);
 						}
 						if (p && *p == ':') p++;
 					}
@@ -694,7 +688,7 @@ static void parse_config()
 						}
 						else
 						{
-							sprintf(midi_speed_labels[i], "%d", midi_speeds[i]);
+							snprintf(midi_speed_labels[i], sizeof(midi_speed_labels[i]), "%d", midi_speeds[i]);
 						}
 						if (p && *p == ':') p++;
 					}
@@ -844,7 +838,7 @@ static void parse_config()
 						}
 					}
 
-					sprintf(str, "%s.f%c", user_io_get_core_name(), p[idx]);
+					snprintf(str, sizeof(str), "%s.f%c", user_io_get_core_name(), p[idx]);
 					if (FileLoadConfig(str, str, sizeof(str)) && str[0])
 					{
 
@@ -858,7 +852,7 @@ static void parse_config()
 			if (p[0] == 'S' && p[1] == 'C')
 			{
 				static char str[1024];
-				sprintf(str, "%s.s%c", user_io_get_core_name(), p[2]);
+				snprintf(str,sizeof(str), "%s.s%c", user_io_get_core_name(), p[2]);
 
 				static char ext[256];
 				substrcpy(ext, p, 1);
@@ -905,7 +899,7 @@ static void parse_config()
 	strcat(str, " ");
 	for (int i = 32; i < 64; i++) strcat(str, mask[i] ? "X" : " ");
 	strcat(str, "\n");
-	printf(str);
+	puts(str);
 
 	int ovr = 0;
 	for (int i = 0; i < 64; i++) ovr |= overlap[i];
@@ -917,7 +911,7 @@ static void parse_config()
 		strcat(str, " ");
 		for (int i = 32; i < 64; i++) strcat(str, overlap[i] ? "^" : " ");
 		strcat(str, "\n");
-		printf(str);
+		puts(str);
 		printf("// *Overlapped bits!* (can be intentional)\n");
 	}
 	printf("\n");
@@ -935,7 +929,7 @@ static void parse_config()
 		strcat(str, " ");
 		for (int i = 96; i < 128; i++) strcat(str, mask[i] ? "X" : " ");
 		strcat(str, "\n");
-		printf(str);
+		puts(str);
 
 		ovr = 0;
 		for (int i = 64; i < 128; i++) ovr |= overlap[i];
@@ -947,7 +941,7 @@ static void parse_config()
 			strcat(str, " ");
 			for (int i = 96; i < 128; i++) strcat(str, overlap[i] ? "^" : " ");
 			strcat(str, "\n");
-			printf(str);
+			puts(str);
 			printf("// *Overlapped bits!* (can be intentional)\n");
 		}
 		printf("\n");
@@ -1065,11 +1059,11 @@ void SetUARTMode(int mode)
     MakeFile("/tmp/RBFNAME", user_io_get_core_name(1));
 
 	char data[20];
-	sprintf(data, "%d", baud);
+	snprintf(data, sizeof(data), "%d", baud);
 	MakeFile("/tmp/UART_SPEED", data);
 
 	char cmd[32];
-	sprintf(cmd, "uartmode %d", mode);
+	snprintf(cmd, sizeof(cmd), "uartmode %d", mode);
 	system(cmd);
 }
 
@@ -1119,7 +1113,7 @@ char * GetMidiLinkSoundfont()
     else
     {
         printf("ERROR: GetMidiLinkSoundfont : Unable to open --> '%s'\n", fileName);
-        sprintf(mLinkSoundfont, "linux/soundfonts");
+        snprintf(mLinkSoundfont, sizeof(mLinkSoundfont), "linux/soundfonts");
     }
     return mLinkSoundfont;
 }
@@ -1457,22 +1451,22 @@ void user_io_init(const char *path, const char *xml)
 							// check for multipart rom
 							for (char i = 0; i < 4; i++)
 							{
-								sprintf(mainpath, "%s/boot%d.rom", home, i);
+								snprintf(mainpath, sizeof(mainpath), "%s/boot%d.rom", home, i);
 								user_io_file_tx(mainpath, i << 6);
 							}
 						}
 
 						// legacy style of rom
-						sprintf(mainpath, "%s/boot.rom", home);
+						snprintf(mainpath, sizeof(mainpath), "%s/boot.rom", home);
 						if (!user_io_file_tx(mainpath))
 						{
 							strcpy(name + strlen(name) - 3, "ROM");
-							sprintf(mainpath, "%s/%s", get_rbf_dir(), name);
+							snprintf(mainpath, sizeof(mainpath), "%s/%s", get_rbf_dir(), name);
 							if (!get_rbf_dir()[0] || !user_io_file_tx(mainpath))
 							{
 								if (!user_io_file_tx(name))
 								{
-									sprintf(mainpath, "bootrom/%s", name);
+									snprintf(mainpath, sizeof(mainpath), "bootrom/%s", name);
 									user_io_file_tx(mainpath);
 								}
 							}
@@ -1487,13 +1481,13 @@ void user_io_init(const char *path, const char *xml)
 						for (int m = 0; m < 3; m++)
 						{
 							const char *model = !m ? "" : (m == 1) ? "0" : "1";
-							sprintf(mainpath, "%s/boot%s.eZZ", home, model);
+							snprintf(mainpath, sizeof(mainpath), "%s/boot%s.eZZ", home, model);
 							user_io_file_tx(mainpath, 0x40 * (m + 1), 0, 1);
-							sprintf(mainpath, "%s/boot%s.eZ0", home, model);
+							snprintf(mainpath, sizeof(mainpath), "%s/boot%s.eZ0", home, model);
 							user_io_file_tx(mainpath, 0x40 * (m + 1), 0, 1);
 							for (int i = 0; i < 256; i++)
 							{
-								sprintf(mainpath, "%s/boot%s.e%02X", home, model, i);
+								snprintf(mainpath, sizeof(mainpath), "%s/boot%s.e%02X", home, model, i);
 								user_io_file_tx(mainpath, 0x40 * (m + 1), 0, 1);
 							}
 						}
@@ -1502,7 +1496,7 @@ void user_io_init(const char *path, const char *xml)
 					// check if vhd present
 					for (char i = 0; i < 4; i++)
 					{
-						sprintf(mainpath, "%s/boot%d.vhd", home, i);
+						snprintf(mainpath, sizeof(mainpath), "%s/boot%d.vhd", home, i);
 						if (FileExists(mainpath))
 						{
 							user_io_set_index(i << 6);
@@ -1510,7 +1504,7 @@ void user_io_init(const char *path, const char *xml)
 						}
 					}
 
-					sprintf(mainpath, "%s/boot.vhd", home);
+					snprintf(mainpath, sizeof(mainpath), "%s/boot.vhd", home);
 					if (FileExists(mainpath))
 					{
 						user_io_set_index(0);
@@ -1519,7 +1513,7 @@ void user_io_init(const char *path, const char *xml)
 					else
 					{
 						strcpy(name + strlen(name) - 3, "VHD");
-						sprintf(mainpath, "%s/%s", get_rbf_dir(), name);
+						snprintf(mainpath, sizeof(mainpath), "%s/%s", get_rbf_dir(), name);
 						if (FileExists(mainpath))
 						{
 							user_io_set_index(0);
@@ -1561,20 +1555,20 @@ void user_io_init(const char *path, const char *xml)
 		if (!uart_speeds[0])
 		{
 			uart_speeds[0] = is_st() ? 19200 : 115200;
-			sprintf(uart_speed_labels[0], "%d", uart_speeds[0]);
+			snprintf(uart_speed_labels[0], sizeof(uart_speed_labels[0]), "%d", uart_speeds[0]);
 
 			if (!midi_speeds[0])
 			{
 				midi_speeds[0] = 31250;
-				sprintf(midi_speed_labels[0], "%d", midi_speeds[0]);
+				snprintf(midi_speed_labels[0], sizeof(midi_speed_labels[0]), "%d", midi_speeds[0]);
 			}
 		}
 
-		sprintf(mainpath, "uartmode.%s", user_io_get_core_name());
+		snprintf(mainpath, sizeof(mainpath), "uartmode.%s", user_io_get_core_name());
 		FileLoadConfig(mainpath, &mode, 4);
 
 		uint32_t speeds[3] = {};
-		sprintf(mainpath, "uartspeed.%s", user_io_get_core_name());
+		snprintf(mainpath, sizeof(mainpath), "uartspeed.%s", user_io_get_core_name());
 		FileLoadConfig(mainpath, speeds, sizeof(speeds));
 
 		ValidateUARTbaud(1, speeds[0]);
@@ -2045,7 +2039,7 @@ int user_io_file_mount(const char *name, unsigned char index, char pre, int pre_
 	EnableIO();
 	spi8(UIO_SET_SDINFO);
 
-	__off64_t size = sd_image[index].size;
+	auto size = sd_image[index].size;
 	if (!ret && pre)
 	{
 		sd_image[index].type = 2;
@@ -2319,7 +2313,7 @@ static void send_pcolchr(const char* name, unsigned char index, int type)
 {
 	static char full_path[1024];
 
-	sprintf(full_path, "%s/%s", getRootDir(), name);
+	snprintf(full_path, sizeof(full_path), "%s/%s", getRootDir(), name);
 
 	char *p = strrchr(full_path, '.');
 	if (!p) p = full_path + strlen(full_path);
@@ -2367,7 +2361,7 @@ static void check_status_change()
 	if ((stchg & 0xF0) == 0xA0 && last_status_change != (stchg & 0xF))
 	{
 		last_status_change = (stchg & 0xF);
-		for (uint i = 0; i < sizeof(cur_status); i += 2)
+		for (auto i = 0; i < sizeof(cur_status); i += 2)
 		{
 			uint16_t x = spi_w(0);
 			cur_status[i] = (char)x;
@@ -3047,7 +3041,7 @@ void user_io_poll()
 						{
 							if (!sd_image_cangrow[disk])
 							{
-								__off64_t rem = sd_image[disk].size - sd_image[disk].offset;
+								auto rem = sd_image[disk].size - sd_image[disk].offset;
 								sz = (rem >= sz) ? sz : (int)rem;
 							}
 
@@ -3436,7 +3430,7 @@ void user_io_poll()
 	prev_coldreset_req = coldreset_req;
 	if (reset_timer && CheckTimer(reset_timer))
 	{
-		reboot(1);
+		fpga_reboot(1);
 	}
 
 	save_volume();
@@ -3780,7 +3774,7 @@ void user_io_check_reset(unsigned short modifiers, char useKeys)
 
 	if (useKeys >= (sizeof(combo) / sizeof(combo[0]))) useKeys = 0;
 
-	if ((modifiers & ~2) == combo[(uint)useKeys])
+	if ((modifiers & ~2) == combo[(unsigned int)useKeys])
 	{
 		if (modifiers & 2) // with lshift - cold reset
 		{

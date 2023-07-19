@@ -39,9 +39,8 @@
 #define MCD_SUB_IO_INDEX 3
 #define MCD_CDDA_IO_INDEX 4
 
+#include <cstdint>
 #include "../../cd.h"
-#include <libchdr/chd.h>
-
 class cdd_t
 {
 public:

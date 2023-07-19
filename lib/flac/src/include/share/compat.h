@@ -150,7 +150,7 @@
 #define flac_utime flac_internal_utime_utf8
 #define flac_unlink flac_internal_unlink_utf8
 #define flac_rename flac_internal_rename_utf8
-#define flac_stat flac_internal_stat64_utf8
+#define flac_stat flac_internal_stat_utf8
 
 #else
 
@@ -168,8 +168,8 @@
 #endif
 
 #ifdef _WIN32
-#define flac_stat_s __stat64 /* stat struct */
-#define flac_fstat _fstat64
+#define flac_stat_s __stat /* stat struct */
+#define flac_fstat _fstat
 #else
 #define flac_stat_s stat /* stat struct */
 #define flac_fstat fstat

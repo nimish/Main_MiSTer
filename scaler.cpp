@@ -3,18 +3,9 @@ Copyright 2019 alanswx
 with help from the MiSTer contributors including Grabulosaure
 */
 
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
-#include <stdio.h>
-#include <sched.h>
-#include <inttypes.h>
-#include <ctype.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#include <sys/types.h>
-#include <err.h>
 
 #include "scaler.h"
 #include "shmem.h"

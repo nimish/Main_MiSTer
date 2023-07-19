@@ -1,7 +1,9 @@
 #ifndef IDE_H
 #define IDE_H
+#include <cstdint>
 
-#include "support/chd/mister_chd.h"
+#include "file_io.h"
+#include "libchdr/chd.h"
 
 #define ATA_STATUS_BSY  0x80  // busy
 #define ATA_STATUS_RDY  0x40  // ready
@@ -133,8 +135,6 @@ struct chs_t
 	uint32_t cylinders;
 	uint32_t offset;
 };
-
-#include "ide_cdrom.h"
 
 extern ide_config ide_inst[2];
 extern const uint32_t ide_io_max_size;

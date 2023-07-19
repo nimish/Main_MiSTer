@@ -1,22 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <errno.h>
-#include <sys/ioctl.h>
-#include <linux/vt.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
 
+#include "cfg.h"
 #include "hardware.h"
 #include "user_io.h"
-#include "spi.h"
-#include "cfg.h"
-#include "file_io.h"
 #include "menu.h"
 #include "audio.h"
+#include "spi.h"
+#include "file_io.h"
 
 static uint8_t vol_att = 0;
 static uint8_t corevol_att = 0;
@@ -168,7 +160,7 @@ void set_volume(int cmd)
 		char str[32];
 		memset(str, 0, sizeof(str));
 
-		sprintf(str, "\x8d ");
+		snprintf(str, sizeof(str), "\x8d ");
 		char *bar = str + strlen(str);
 
 		int vol = (audio_filter_en() < 0) ? get_core_volume() : 0;
@@ -198,14 +190,14 @@ void save_volume()
 		FileSaveConfig("Volume.dat", &vol_att, 1);
 
 		static char cfg_name[128];
-		sprintf(cfg_name, "%s_volume.cfg", user_io_get_core_name());
+		snprintf(cfg_name, sizeof(cfg_name), "%s_volume.cfg", user_io_get_core_name());
 		FileSaveConfig(cfg_name, &corevol_att, 1);
 	}
 }
 
 void load_volume()
 {
-	sprintf(filter_cfg_path, "%s_afilter.cfg", user_io_get_core_name());
+	snprintf(filter_cfg_path, sizeof(filter_cfg_path), "%s_afilter.cfg", user_io_get_core_name());
 	if (!FileLoadConfig(filter_cfg_path, &filter_cfg, sizeof(filter_cfg) - 1) || filter_cfg[0] > 1)
 	{
 		memset(filter_cfg, 0, sizeof(filter_cfg));
@@ -220,7 +212,7 @@ void load_volume()
 	if (!is_menu())
 	{
 		static char cfg_name[128];
-		sprintf(cfg_name, "%s_volume.cfg", user_io_get_core_name());
+		snprintf(cfg_name,sizeof(cfg_name), "%s_volume.cfg", user_io_get_core_name());
 		FileLoadConfig(cfg_name, &corevol_att, 1);
 	}
 
@@ -251,7 +243,7 @@ char* audio_get_filter(int only_name)
 void audio_set_filter(const char *name)
 {
 	strcpy(filter_cfg + 1, name);
-	sprintf(filter_cfg_path, "%s_afilter.cfg", user_io_get_core_name());
+	snprintf(filter_cfg_path, sizeof(filter_cfg_path), "%s_afilter.cfg", user_io_get_core_name());
 	FileSaveConfig(filter_cfg_path, &filter_cfg, sizeof(filter_cfg));
 	setFilter();
 }
@@ -259,7 +251,7 @@ void audio_set_filter(const char *name)
 void audio_set_filter_en(int n)
 {
 	filter_cfg[0] = n ? 1 : 0;
-	sprintf(filter_cfg_path, "%s_afilter.cfg", user_io_get_core_name());
+	snprintf(filter_cfg_path, sizeof(filter_cfg_path), "%s_afilter.cfg", user_io_get_core_name());
 	FileSaveConfig(filter_cfg_path, &filter_cfg, sizeof(filter_cfg));
 	setFilter();
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #define ACTION_NIL            0
 #define ACTION_GET_BLOCK      2
 #define ACTION_SET_MAP        4

@@ -1,39 +1,24 @@
-#include "file_io.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <string.h>
-#include <fcntl.h>
-#include <strings.h>
-#include <sys/stat.h>
 #include <dirent.h>
-#include <ctype.h>
-#include <sys/vfs.h>
-#include <sys/mman.h>
-#include <sys/ioctl.h>
-#include <sys/mount.h>
-#include <linux/magic.h>
-#include <algorithm>
-#include <vector>
-#include <string>
 #include <set>
-#include "lib/miniz/miniz.h"
-#include "osd.h"
+#include <string>
+#include <sys/dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <vector>
+#include <fcntl.h>
+
+#include "file_io.h"
 #include "fpga_io.h"
-#include "menu.h"
-#include "errno.h"
-#include "DiskImage.h"
-#include "user_io.h"
 #include "cfg.h"
 #include "input.h"
+#include "menu.h"
 #include "miniz.h"
-#include "scheduler.h"
+#include "osd.h"
+#include "user_io.h"
 #include "video.h"
-#include "support.h"
-
-#define MIN(a,b) (((a)<(b)) ? (a) : (b))
+#include "support/neogeo/neogeo_loader.h"
 
 typedef std::vector<direntext_t> DirentVector;
 typedef std::set<std::string> DirNameSet;
@@ -91,7 +76,7 @@ struct fileZipArchive
 	mz_zip_archive                    archive;
 	int                               index;
 	mz_zip_reader_extract_iter_state* iter;
-	__off64_t                         offset;
+	off_t                         offset;
 };
 
 
@@ -155,11 +140,11 @@ static char* make_fullpath(const char *path, int mode = 0)
 {
 	if (path[0] != '/')
 	{
-		sprintf(full_path, "%s/%s", (mode == -1) ? "" : getRootDir(), path);
+		snprintf(full_path, sizeof(full_path), "%s/%s", (mode == -1) ? "" : getRootDir(), path);
 	}
 	else
 	{
-		sprintf(full_path, "%s",path);
+		snprintf(full_path, sizeof(full_path), "%s",path);
 	}
 
 	return full_path;
@@ -167,15 +152,15 @@ static char* make_fullpath(const char *path, int mode = 0)
 
 static int get_stmode(const char *path)
 {
-	struct stat64 st;
-	return (stat64(path, &st) < 0) ? 0 : st.st_mode;
+	struct stat st;
+	return (stat(path, &st) < 0) ? 0 : st.st_mode;
 }
 
-struct stat64* getPathStat(const char *path)
+struct stat* getPathStat(const char *path)
 {
 	make_fullpath(path);
-	static struct stat64 st;
-	return (stat64(full_path, &st) >= 0) ? &st : NULL;
+	static struct stat st;
+	return (stat(full_path, &st) >= 0) ? &st : NULL;
 }
 
 static int isPathDirectory(const char *path, int use_zip = 1)
@@ -480,8 +465,8 @@ int FileOpenEx(fileTYPE *file, const char *name, int mode, char mute, int use_zi
 		}
 		else
 		{
-			struct stat64 st;
-			int ret = fstat64(fileno(file->filp), &st);
+			struct stat st;
+			int ret = fstat(fileno(file->filp), &st);
 			if (ret < 0)
 			{
 				if (!mute) printf("FileOpenEx(fstat) File:%s, error: %d.\n", full_path, ret);
@@ -512,12 +497,12 @@ int FileOpenEx(fileTYPE *file, const char *name, int mode, char mute, int use_zi
 	return 1;
 }
 
-__off64_t FileGetSize(fileTYPE *file)
+off_t FileGetSize(fileTYPE *file)
 {
 	if (file->filp)
 	{
-		struct stat64 st;
-		if (fstat64(fileno(file->filp), &st) < 0) return 0;
+		struct stat st;
+		if (fstat(fileno(file->filp), &st) < 0) return 0;
 
 		if (st.st_rdev && !st.st_size)  //for special files we need an ioctl call to get the correct size
 		{
@@ -541,17 +526,17 @@ int FileOpen(fileTYPE *file, const char *name, char mute)
 	return FileOpenEx(file, name, O_RDONLY, mute);
 }
 
-int FileSeek(fileTYPE *file, __off64_t offset, int origin)
+int FileSeek(fileTYPE *file, off_t offset, int origin)
 {
 	if (file->filp)
 	{
-		__off64_t res = fseeko64(file->filp, offset, origin);
+		auto res = fseeko(file->filp, offset, origin);
 		if (res < 0)
 		{
 			printf("Fail to seek the file: offset=%lld, %s.\n", offset, file->name);
 			return 0;
 		}
-		offset = ftello64(file->filp);
+		offset = ftello(file->filp);
 	}
 	else if (file->zip)
 	{
@@ -582,7 +567,7 @@ int FileSeek(fileTYPE *file, __off64_t offset, int origin)
 		static char buf[4*1024];
 		while (file->zip->offset < offset)
 		{
-			const size_t want_len = MIN((__off64_t)sizeof(buf), offset - file->zip->offset);
+			const size_t want_len = std::min((typeof(offset))sizeof(buf), offset - file->zip->offset);
 			const size_t read_len = mz_zip_reader_extract_iter_read(file->zip->iter, buf, want_len);
 			file->zip->offset += read_len;
 			if (read_len < want_len)
@@ -604,7 +589,7 @@ int FileSeek(fileTYPE *file, __off64_t offset, int origin)
 
 int FileSeekLBA(fileTYPE *file, uint32_t offset)
 {
-	__off64_t off64 = offset;
+	off_t off64 = offset;
 	off64 <<= 9;
 	return FileSeek(file, off64, SEEK_SET);
 }
@@ -619,7 +604,7 @@ int FileReadAdv(fileTYPE *file, void *pBuffer, int length, int failres)
 		ret = fread(pBuffer, 1, length, file->filp);
 		if (ret < 0)
 		{
-			printf("FileReadAdv error(%d).\n", ret);
+			printf("FileReadAdv error(%zd).\n", ret);
 			return failres;
 		}
 	}
@@ -803,8 +788,8 @@ int FileCanWrite(const char *name)
 		return 0;
 	}
 
-	struct stat64 st;
-	int ret = stat64(full_path, &st);
+	struct stat st;
+	int ret = stat(full_path, &st);
 	if (ret < 0)
 	{
 		printf("FileCanWrite(stat) File:%s, error: %d.\n", full_path, ret);
@@ -877,7 +862,7 @@ void FileGenerateSavePath(const char *name, char* out_name, int ext_replace)
 {
 	create_path(SAVE_DIR, CoreName);
 
-	sprintf(out_name, "%s/%s/", SAVE_DIR, CoreName);
+	snprintf(out_name, sizeof(out_name), "%s/%s/", SAVE_DIR, CoreName);
 	char *fname = out_name + strlen(out_name);
 
 	const char *p = strrchr(name, '/');
@@ -907,7 +892,7 @@ void FileGenerateSavestatePath(const char *name, char* out_name, int sufx)
 {
 	create_path(SAVESTATE_DIR, CoreName);
 
-	sprintf(out_name, "%s/%s/", SAVESTATE_DIR, CoreName);
+	snprintf(out_name, sizeof(out_name), "%s/%s/", SAVESTATE_DIR, CoreName);
 	char *fname = out_name + strlen(out_name);
 
 	const char *p = strrchr(name, '/');
@@ -922,8 +907,8 @@ void FileGenerateSavestatePath(const char *name, char* out_name, int sufx)
 
 	char *e = strrchr(fname, '.');
 	if (e) e[0] = 0;
-
-	if(sufx) sprintf(e, "_%d.ss", sufx);
+	auto len = strlen(e);
+	if(sufx) snprintf(e, len, "_%d.ss", sufx);
 	else strcat(e, ".ss");
 }
 
@@ -931,8 +916,8 @@ uint32_t getFileType(const char *name)
 {
 	make_fullpath(name);
 
-	struct stat64 st;
-	if (stat64(full_path, &st)) return 0;
+	struct stat st;
+	if (stat(full_path, &st)) return 0;
 
 	return st.st_mode;
 }
@@ -1037,7 +1022,7 @@ const char *getStorageDir(int dev)
 {
 	static char path[32];
 	if (!dev) return "/media/fat";
-	sprintf(path, "/media/usb%d", usbnum);
+	snprintf(path, sizeof(path), "/media/usb%d", usbnum);
 	return path;
 }
 
@@ -1068,7 +1053,7 @@ int getStorage(int from_setting)
 int isPathMounted(int n)
 {
 	char path[32];
-	sprintf(path, "/media/usb%d", n);
+	snprintf(path, sizeof(path), "/media/usb%d", n);
 
 	struct stat file_stat;
 	struct stat parent_stat;
@@ -1159,7 +1144,7 @@ void FindStorage(void)
 
 		for (int i = 30; i >= 0; i--)
 		{
-			sprintf(str, "\n     Waiting for USB...\n\n             %d   \n\n\n  OSD/USER or ESC to cancel", i);
+			snprintf(str, sizeof(str), "\n     Waiting for USB...\n\n             %d   \n\n\n  OSD/USER or ESC to cancel", i);
 			InfoMessage(str);
 			if (isUSBMounted())
 			{
@@ -1201,7 +1186,7 @@ void FindStorage(void)
 		printf("Using SD card as a root device\n");
 	}
 
-	sprintf(full_path, "%s/" CONFIG_DIR, getRootDir());
+	snprintf(full_path, sizeof(full_path), "%s/" CONFIG_DIR, getRootDir());
 	DIR* dir = opendir(full_path);
 	if (dir) closedir(dir);
 	else if (ENOENT == errno) mkdir(full_path, S_IRWXU | S_IRWXG | S_IRWXO);
@@ -1429,7 +1414,7 @@ int ScanDirectory(char* path, int mode, const char *extension, int options, cons
 
 		if (options & SCANO_NEOGEO) neogeo_scan_xml(path);
 
-		sprintf(full_path, "%s/%s", getRootDir(), path);
+		snprintf(full_path, sizeof(full_path), "%s/%s", getRootDir(), path);
 		int path_len = strlen(full_path);
 
 		const char* is_zipped = strcasestr(full_path, ".zip");

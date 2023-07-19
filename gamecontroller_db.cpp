@@ -1,14 +1,15 @@
+
+
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include <linux/input.h>
+
 #include "gamecontroller_db.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
 #include "input.h"
-#include "file_io.h"
 #include "user_io.h"
-#include "profiling.h"
-
-
 
 
 //Note: sdl gamecontrollerdb maps  a,b,x,y differently, so we need to swap each pair (a<->b, x<->y)
@@ -264,7 +265,7 @@ void gcdb_show_string_for_ctrl_map(uint16_t bustype, uint16_t vid, uint16_t pid,
 	if (!cur_map) return;
 
 	char guid_str[GUID_LEN] = {0};
-	sprintf(guid_str, "%04x0000%04x0000%04x0000%04x0000", (uint16_t)(bustype << 8 | bustype >> 8), (uint16_t)( vid << 8 |  vid >> 8), (uint16_t)(pid << 8 | pid >> 8), (uint16_t)(version << 8 | version >> 8));
+	snprintf(guid_str, sizeof(guid_str), "%04x0000%04x0000%04x0000%04x0000", (uint16_t)(bustype << 8 | bustype >> 8), (uint16_t)( vid << 8 |  vid >> 8), (uint16_t)(pid << 8 | pid >> 8), (uint16_t)(version << 8 | version >> 8));
 	if (strcmp(map_guid, guid_str))
 	{
 

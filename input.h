@@ -2,7 +2,7 @@
 #ifndef EVINPUT_H
 #define EVINPUT_H
 
-#include <linux/input.h>
+#include <cstdint>
 
 #define HID_LED_NUM_LOCK    1
 #define HID_LED_CAPS_LOCK   2

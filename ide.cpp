@@ -1,25 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
+#include <cstdint>
+#include <cstring>
 #include <fcntl.h>
-#include <time.h>
-#include <ios>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <sys/stat.h>
 
-#include "support/x86/x86.h"
 #include "support/minimig/minimig_hdd.h"
 #include "support/minimig/minimig_config.h"
-#include "spi.h"
-#include "user_io.h"
-#include "file_io.h"
+#include "support/x86/x86.h"
+
 #include "hardware.h"
 #include "ide.h"
+#include "ide_cdrom.h"
+#include "spi.h"
+#include "user_io.h"
 
 #if 0
 	#define dbg_printf     printf

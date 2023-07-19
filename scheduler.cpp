@@ -1,12 +1,12 @@
-#include "scheduler.h"
-#include <stdio.h>
+
+#include "fpga_io.h"
+#include "input.h"
 #include "libco.h"
 #include "menu.h"
-#include "user_io.h"
-#include "input.h"
-#include "fpga_io.h"
 #include "osd.h"
 #include "profiling.h"
+#include "user_io.h"
+#include "scheduler.h"
 
 static cothread_t co_scheduler = nullptr;
 static cothread_t co_poll = nullptr;

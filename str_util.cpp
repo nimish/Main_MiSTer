@@ -1,6 +1,7 @@
+#include <cstring>
+
 #include "str_util.h"
 
-#include <string.h>
 
 int str_tokenize(char *s, const char *delim, char **tokens, int max_tokens)
 {

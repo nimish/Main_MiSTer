@@ -6,8 +6,7 @@
 #ifndef USER_IO_H
 #define USER_IO_H
 
-#include <inttypes.h>
-#include "file_io.h"
+#include <cstdint>
 
 #define UIO_STATUS      0x00
 #define UIO_BUT_SW      0x01
@@ -187,7 +186,7 @@ int  user_io_file_mount(const char *name, unsigned char index = 0, char pre = 0,
 void user_io_bufferinvalidate(unsigned char index);
 char *user_io_make_filepath(const char *path, const char *filename);
 char *user_io_get_core_name(int orig = 0);
-char *user_io_get_core_path(const char *suffix = NULL, int recheck = 0);
+char *user_io_get_core_path(const char *suffix = nullptr, int recheck = 0);
 void user_io_name_override(const char* name);
 char has_menu();
 

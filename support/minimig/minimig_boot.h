@@ -5,7 +5,7 @@
 
 #ifndef __MINIMIG_BOOT_H__
 #define __MINIMIG_BOOT_H__
-
+#include <cstdio>
 
 //// defines ////
 #define SCREEN_WIDTH    640

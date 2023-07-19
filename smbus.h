@@ -1,7 +1,7 @@
-#include <stdint.h>
 
 #ifndef SMBUS_H
 #define SMBUS_H
+#include <cstdint>
 
 int i2c_open(int dev_address, int is_smbus);
 void i2c_close(int fd);

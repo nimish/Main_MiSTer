@@ -2,16 +2,15 @@
 This file contains lookup information on known controllers
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <inttypes.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 
-#include "joymapping.h"
-#include "menu.h"
-#include "input.h"
-#include "user_io.h"
 #include "cfg.h"
+#include "input.h"
+#include "menu.h"
+#include "user_io.h"
+#include "joymapping.h"
 
 #define DPAD_COUNT 4
 
@@ -252,8 +251,8 @@ void map_joystick_show(uint32_t *map, uint32_t *mmap, int num)
 	static char mapinfo[1024];
 	read_buttons();
 
-	sprintf(mapinfo, "Map (P%d):", num);
-	if (!num) sprintf(mapinfo, " Map:");
+	snprintf(mapinfo, sizeof(mapinfo), "Map (P%d):", num);
+	if (!num) snprintf(mapinfo, sizeof(mapinfo)," Map:");
 	char *list = mapinfo + strlen(mapinfo);
 
 	// loop through core requested buttons and construct result map

@@ -5,14 +5,15 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>   // clock_gettime, CLOCK_REALTIME
+#include <unistd.h>
 #include "neogeo_loader.h"
 #include "neogeocd.h"
 #include "../../sxmlc.h"
 #include "../../user_io.h"
 #include "../../fpga_io.h"
-#include "../../osd.h"
 #include "../../menu.h"
 #include "../../shmem.h"
+#include "../../spi.h"
 
 struct NeoFile
 {
@@ -137,7 +138,7 @@ static uint32_t neogeo_file_tx(const char* path, const char* name, uint8_t neo_f
 	uint8_t buf_out[4096];
 	static char name_buf[1024];
 
-	sprintf(name_buf, "%s/%s", path, name);
+	snprintf(name_buf,sizeof(name_buf), "%s/%s", path, name);
 	if (!FileOpen(&f, name_buf, 0)) return 0;
 	if (!size && offset < f.size) size = f.size - offset;
 	if (!size) return 0;
@@ -546,8 +547,8 @@ static void parse_xml(const char* filename, const SAX_Callbacks* sax, void* user
 int neogeo_scan_xml(char *path)
 {
 	static char full_path[1024];
-	sprintf(full_path, "%s/romsets.xml", path);
-	if(!FileExists(full_path)) sprintf(full_path, "%s/%s/romsets.xml", getRootDir(), HomeDir());
+	snprintf(full_path, sizeof(full_path),"%s/romsets.xml", path);
+	if(!FileExists(full_path)) snprintf(full_path, sizeof(full_path),"%s/%s/romsets.xml", getRootDir(), HomeDir());
 
 	SAX_Callbacks sax;
 	SAX_Callbacks_init(&sax);
@@ -596,7 +597,7 @@ char *neogeo_get_altname(char *path, char *name, char *altname)
 		if (*altname) return altname;
 	}
 
-	sprintf(full_path, ",%s,", altname);
+	snprintf(full_path,sizeof(full_path), ",%s,", altname);
 	for (uint32_t i = 0; i < rom_cnt; i++)
 	{
 		if (roms[i].name[0] == ',')
@@ -607,7 +608,7 @@ char *neogeo_get_altname(char *path, char *name, char *altname)
 				if (roms[i].hide) return (char*)-1;
 				if(p == roms[i].name) return roms[i].altname;
 
-				sprintf(full_path, "%s (%s)", roms[i].altname, altname);
+				snprintf(full_path,sizeof(full_path), "%s (%s)", roms[i].altname, altname);
 				return full_path;
 			}
 		}
@@ -701,7 +702,7 @@ static int xml_check_files(XMLEvent evt, const XMLNode* node, SXML_CHAR* text, c
 						else
 						{
 							printf("Missing %s\n", full_path);
-							sprintf(full_path, "Missing %s !", node->attributes[i].value);
+							snprintf(full_path, sizeof(full_path),"Missing %s !", node->attributes[i].value);
 							Info(full_path);
 							return false;
 						}
@@ -1178,22 +1179,22 @@ int neogeo_romset_tx(char* name, int cd_en)
 		else
 		{
 			int dspack = 1;
-			sprintf(full_path, "%s/crom0", name);
+			snprintf(full_path, sizeof(full_path), "%s/crom0", name);
 			if (!FileExists(full_path)) dspack = 0;
 			if (dspack)
 			{
-				sprintf(full_path, "%s/prom", name);
+				snprintf(full_path, sizeof(full_path), "%s/prom", name);
 				if (!FileExists(full_path)) dspack = 0;
 			}
 
-			sprintf(full_path, "%s/%s/romset.xml", getRootDir(), name);
+			snprintf(full_path, sizeof(full_path),"%s/%s/romset.xml", getRootDir(), name);
 			if (!FileExists(full_path))
 			{
 				strcpy(full_path, name);
 				char *p = strrchr(full_path, '/');
 				if (p) *p = 0;
 				strcat(full_path, "/romsets.xml");
-				if (!FileExists(full_path)) sprintf(full_path, "%s/%s/romsets.xml", getRootDir(), home);
+				if (!FileExists(full_path)) snprintf(full_path,sizeof(full_path), "%s/%s/romsets.xml", getRootDir(), home);
 			}
 			printf("xml for %s: %s\n", name, full_path);
 
@@ -1219,7 +1220,7 @@ int neogeo_romset_tx(char* name, int cd_en)
 	if (strcmp(romset, "debug")) {
 		// Not loading the special 'debug' romset
 		if (!cd_en) {
-			sprintf(full_path, "%s/uni-bios.rom", home);
+			snprintf(full_path, sizeof(full_path), "%s/uni-bios.rom", home);
 			if (!(mask & 0x8000) && FileExists(full_path)) {
 				// Autoload Unibios for cart systems if present
 				neogeo_tx(home, "uni-bios.rom", NEO_FILE_RAW, 0, 0, 0x20000);
@@ -1231,7 +1232,6 @@ int neogeo_romset_tx(char* name, int cd_en)
 					neogeo_tx(home, "sp-s2.sp1", NEO_FILE_RAW, 0, 0, 0x20000);
 			}
 		} else {
-			fill_ram(128 * 1024, 0xAA);
 			sprintf(full_path, "%s/uni-bioscd.rom", home);
 			if (!(mask & 0x8000) && FileExists(full_path)) {
 				neogeo_tx(home, "uni-bioscd.rom", NEO_FILE_RAW, 0, 0, 0x80000);

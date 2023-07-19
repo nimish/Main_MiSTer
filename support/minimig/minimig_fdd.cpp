@@ -23,15 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //              - fixed sector header generation
 // 2010-01-09   - support for variable number of tracks
 
-#include <stdio.h>
-#include <string.h>
-#include "../../hardware.h"
-#include "../../file_io.h"
+#include <cstdio>
+#include <cstring>
+#include <fcntl.h>
 #include "minimig_fdd.h"
-#include "minimig_config.h"
 #include "../../debug.h"
-#include "../../user_io.h"
 #include "../../menu.h"
+#include "../../file_io.h"
+#include "../../spi.h"
 
 unsigned char drives = 0; // number of active drives reported by FPGA (may change only during reset)
 adfTYPE *pdfx;            // drive select pointer

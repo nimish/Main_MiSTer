@@ -5,10 +5,7 @@
 #include "file_io.h"
 #include "cfg.h"
 #include "fpga_io.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
+#include <cstring>
 
 
 extern int xml_load(const char *xml);
@@ -95,7 +92,7 @@ char* loadLastcore()
 	char full_path[2100];
 	char path[256] = { CONFIG_DIR"/" };
 	strcat(path, "lastcore.dat");
-	sprintf(full_path, "%s/%s", getRootDir(), path);
+	snprintf(full_path, sizeof(full_path), "%s/%s", getRootDir(), path);
 	FILE *fd = fopen(full_path, "r");
 	if (!fd)
 	{
@@ -195,7 +192,7 @@ void bootcore_init(const char *path)
 		strcpy(bootcore, auxpointer);
 		delete[] auxpointer;
 
-		sprintf(auxstr, "%s/", rootdir);
+		snprintf(auxstr, sizeof(auxstr), "%s/", rootdir);
 		auxpointer = replaceStr(bootcore, auxstr, "");
 		if (auxpointer != NULL)
 		{

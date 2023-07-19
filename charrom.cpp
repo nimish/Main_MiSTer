@@ -1,12 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <limits.h>
-#include <ctype.h>
+#include <cstring>
 
-#include "hardware.h"
 #include "file_io.h"
 
 

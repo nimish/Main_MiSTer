@@ -1,6 +1,7 @@
 #ifndef NEOGEOCD_H
 #define NEOGEOCD_H
 
+#include <cstdint>
 
 void neocd_poll();
 void neocd_set_image(char *filename);

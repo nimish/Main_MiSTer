@@ -6,6 +6,7 @@
 
 #ifndef	_SYSTEM_MANAGER_H_
 #define	_SYSTEM_MANAGER_H_
+#include <cstdint>
 
 struct socfpga_system_manager {
 	/* System Manager Module */

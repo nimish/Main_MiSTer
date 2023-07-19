@@ -3,16 +3,19 @@
 // 2014, rok.krajnc@gmail.com
 
 
-#include "string.h"
-#include "stdio.h"
-#include "minimig_boot.h"
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+
 #include "../../hardware.h"
 #include "../../user_io.h"
 #include "../../spi.h"
 #include "../../file_io.h"
-#include "minimig_config.h"
-#include "minimig_fdd.h"
 #include "../../cfg.h"
+
+#include "minimig_boot.h"
+#include "minimig_config.h"
+
 
 static uint8_t buffer[1024];
 
@@ -42,7 +45,7 @@ void BootHome()
 	bootscreen_adr = 0x80000 + /*120*/112 * 640 / 8;
 }
 
-static const char boot_font[96][8] =
+static const uint8_t boot_font[96][8] =
 {
 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },  // SPACE
 	{ 0x18, 0x18, 0x18, 0x18, 0x18, 0x00, 0x18, 0x00 },  // !
@@ -430,8 +433,7 @@ void BootPrintEx(const char * str)
 	unsigned char i, j;
 	unsigned char len;
 
-	printf(str);
-	printf("\n");
+	printf("%s\n", str);
 
 	len = strlen(str);
 	len = (len>80) ? 80 : len;

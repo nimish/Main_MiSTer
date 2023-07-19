@@ -1,17 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <signal.h>
-#include <ctype.h>
-#include <termios.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include "shmem.h"
+#include <cstdio>
+#include <cstring>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
 
 static int memfd = -1;
 

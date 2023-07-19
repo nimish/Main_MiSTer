@@ -33,7 +33,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/ioctl.h>
-#include <linux/types.h>
 #include "smbus.h"
 #include "battery.h"
 

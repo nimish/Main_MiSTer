@@ -1,13 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <signal.h>
-#include <ctype.h>
-#include <termios.h>
+#include <sys/fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <cstdint>
+#include <unistd.h>
 
 #include "fpga_io.h"
 #include "file_io.h"
@@ -26,7 +21,7 @@
 #define FPGA_REG_BASE 0xFF000000
 #define FPGA_REG_SIZE 0x01000000
 
-#define MAP_ADDR(x) (volatile uint32_t*)(&map_base[(((uint32_t)(x)) & 0xFFFFFF)>>2])
+#define MAP_ADDR(x) reinterpret_cast<volatile uint32_t*>(&map_base[(reinterpret_cast<uintptr_t>(x) & 0xFFFFFF)>>2])
 #define IS_REG(x) (((((uint32_t)(x))-1)>=(FPGA_REG_BASE - 1)) && ((((uint32_t)(x))-1)<(FPGA_REG_BASE + FPGA_REG_SIZE - 1)))
 
 #define fatal(x) munmap((void*)map_base, FPGA_REG_SIZE); close(fd); exit(x)
@@ -240,16 +235,16 @@ static void fpgamgr_program_write(const void *rbf_data, unsigned long rbf_size)
 	uint32_t loops4 = DIV_ROUND_UP(rbf_size % 32, 4);
 
 	__asm volatile(
-		"1:	ldmia %0!,{r0-r7}   \n"
-		"	stmia %1!,{r0-r7}   \n"
-		"	sub	  %1, #32       \n"
-		"	subs  %2, #1        \n"
+		"1:	ldmia %w0!,{r0-r7}   \n"
+		"	stmia %w1!,{r0-r7}   \n"
+		"	sub	  %w1, #32       \n"
+		"	subs  %w2, #1        \n"
 		"	bne   1b            \n"
-		"	cmp   %3, #0        \n"
+		"	cmp   %w3, #0        \n"
 		"	beq   3f            \n"
-		"2:	ldr	  %2, [%0], #4  \n"
-		"	str   %2, [%1]      \n"
-		"	subs  %3, #1        \n"
+		"2:	ldr	  %w2, [%w0], #4  \n"
+		"	str   %w2, [%w1]      \n"
+		"	subs  %w3, #1        \n"
 		"	bne   2b            \n"
 		"3:	nop                 \n"
 		: "+r"(src), "+r"(dst), "+r"(loops32), "+r"(loops4) :
@@ -432,13 +427,13 @@ int fpga_load_rbf(const char *name, const char *cfg, const char *xml)
 		fpga_core_reset(1);
 		make_env(name, cfg);
 		do_bridge(0);
-		reboot(0);
+		fpga_reboot(0);
 	}
 
 	printf("Loading RBF: %s\n", name);
 
 	if(name[0] == '/') strcpy(path, name);
-	else sprintf(path, "%s/%s", !strcasecmp(name, "menu.rbf") ? getStorageDir(0) : getRootDir(), name);
+	else snprintf(path, sizeof(path), "%s/%s", !strcasecmp(name, "menu.rbf") ? getStorageDir(0) : getRootDir(), name);
 
 	int rbf = open(path, O_RDONLY);
 	if (rbf < 0)
@@ -451,8 +446,8 @@ int fpga_load_rbf(const char *name, const char *cfg, const char *xml)
 	}
 	else
 	{
-		struct stat64 st;
-		if (fstat64(rbf, &st)<0)
+		struct stat st;
+		if (fstat(rbf, &st)<0)
 		{
 			printf("Couldn't get info of file %s\n", path);
 			ret = -1;
@@ -478,7 +473,7 @@ int fpga_load_rbf(const char *name, const char *cfg, const char *xml)
 				else
 				{
 					void *p = buf;
-					__off64_t sz = st.st_size;
+					auto sz = st.st_size;
 					if (!memcmp(buf, "MiSTer", 6))
 					{
 						sz = *(uint32_t*)(((uint8_t*)buf) + 12);
@@ -578,7 +573,7 @@ int fpga_get_io_type()
 	return (fpga_gpi_read() >> 28) & 1;
 }
 
-void reboot(int cold)
+void fpga_reboot(int cold)
 {
 	sync();
 	fpga_core_reset(1);
@@ -604,8 +599,8 @@ char *getappname()
 	memset(dest, 0, sizeof(dest));
 
 	char path[64];
-	sprintf(path, "/proc/%d/exe", getpid());
-	readlink(path, dest, PATH_MAX);
+	snprintf(path, sizeof(path), "/proc/%d/exe", getpid());
+	(void)readlink(path, dest, PATH_MAX);
 
 	return dest;
 }
@@ -625,7 +620,7 @@ void app_restart(const char *path, const char *xml)
 	execl(appname, appname, path, xml, NULL);
 
 	printf("Something went wrong. Rebooting...\n");
-	reboot(1);
+	fpga_reboot(1);
 }
 
 void fpga_core_reset(int reset)
@@ -664,7 +659,7 @@ void fpga_wait_to_reset()
 	{
 		sleep(1);
 	}
-	reboot(0);
+	fpga_reboot(0);
 }
 
 uint16_t fpga_spi(uint16_t word)

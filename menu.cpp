@@ -22,48 +22,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 2009-12-15   - added display of directory name extensions
 // 2010-01-09   - support for variable number of tracks
 // 2016-06-01   - improvements to 8-bit menu
-
-#include <stdlib.h>
-#include <inttypes.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <time.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+#include <cstdlib>
 #include <ifaddrs.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <sched.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <libgen.h>
-#include <bluetooth.h>
-#include <hci.h>
-#include <hci_lib.h>
+#include <netdb.h>
 
-#include "file_io.h"
-#include "osd.h"
-#include "hardware.h"
-#include "menu.h"
+
+#include "support/neogeo/neogeocd.h"
+#include "support/pcecd/pcecd.h"
+#include "support/arcade/mra_loader.h"
+#include "bluetooth.h"
+
 #include "user_io.h"
-#include "debug.h"
-#include "fpga_io.h"
-#include "cfg.h"
-#include "input.h"
-#include "battery.h"
-#include "cheats.h"
 #include "video.h"
-#include "audio.h"
-#include "joymapping.h"
-#include "recent.h"
-#include "support.h"
-#include "bootcore.h"
-#include "ide.h"
-#include "profiling.h"
+#include "battery.h"
+#include "cfg.h"
+#include "file_io.h"
+#include "hardware.h"
+#include "input.h"
+#include "osd.h"
 
 /*menu states*/
 enum MENU
@@ -661,14 +640,14 @@ static void printSysInfo()
 		net = getNet(1);
 		if (net)
 		{
-			sprintf(str, "\x1c %s", net);
+			snprintf(str,sizeof(str), "\x1c %s", net);
 			infowrite(n++, str);
 			j++;
 		}
 		net = getNet(2);
 		if (net)
 		{
-			sprintf(str, "\x1d %s", net);
+			snprintf(str, sizeof(str), "\x1d %s", net);
 			infowrite(n++, str);
 			j++;
 		}
@@ -680,7 +659,7 @@ static void printSysInfo()
 		{
 			infowrite(n++, "");
 
-			sprintf(str, "\x1F ");
+			snprintf(str, sizeof(str), "\x1F ");
 			if (bat.capacity == -1) strcat(str, "n/a");
 			else sprintf(str + strlen(str), "%d%%", bat.capacity);
 			if (bat.current != -1) sprintf(str + strlen(str), " %dmAh", bat.current);
@@ -6456,7 +6435,7 @@ void HandleUI(void)
 					reboot_req = 1;
 
 					int off = hold_cnt / 3;
-					if (off > 5) reboot(1);
+					if (off > 5) fpga_reboot(1);
 
 					sprintf(s, " Cold Reboot");
 					p = s + 5 - off;

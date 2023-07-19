@@ -1,5 +1,6 @@
 #ifndef C64_H
 #define C64_H
+#include "../../file_io.h"
 
 #define G64_BLOCK_COUNT_1541 31
 #define G64_BLOCK_COUNT_1571 52

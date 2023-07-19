@@ -4,6 +4,7 @@
 
 #ifndef __BOOTCORE_H__
 #define __BOOTCORE_H__
+#include <cstdint>
 
 char *getcoreName(char *path);
 char *getcoreExactName(char *path);

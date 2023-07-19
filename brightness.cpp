@@ -21,14 +21,12 @@
  *
  *
  */
-
-#include <stdint.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <errno.h>
+#include <sys/fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>

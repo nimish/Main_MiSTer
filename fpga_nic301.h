@@ -7,6 +7,7 @@
 #ifndef	_NIC301_REGISTERS_H_
 #define	_NIC301_REGISTERS_H_
 
+#include <cstdint>
 struct nic301_registers {
 	uint32_t	remap;				/* 0x0 */
 									/* Security Register Group */

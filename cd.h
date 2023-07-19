@@ -23,7 +23,7 @@ typedef struct
 	cd_subcode_types_t sbc_type;
 } cd_track_t;
 
-typedef struct
+typedef struct toc_t
 {
 	int end;
 	int last;

@@ -2,7 +2,7 @@
 
 #ifndef __MINIMIG_HDD_H__
 #define __MINIMIG_HDD_H__
-
+#include <cstdint>
 // Structure definitions for RDB emulation.
 // For hardfiles that have no RDB information, we'll just create a single-partition RDB and Part block
 // on blocks 0 and 1.  All other blocks within the first cylinder will be translated into the hardfile

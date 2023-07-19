@@ -5,7 +5,8 @@
 #ifndef __CFG_H__
 #define __CFG_H__
 
-#include <inttypes.h>
+#include <cstdint>
+#include <cstddef>
 
 //// type definitions ////
 typedef struct {

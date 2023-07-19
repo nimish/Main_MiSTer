@@ -99,7 +99,7 @@ static int baselen = 0;
 struct dir_item_t
 {
 	dirent64 de;
-	stat64 st;
+	stat st;
 };
 
 struct lock
@@ -291,7 +291,7 @@ static uint32_t get_attr(char *path, uint16_t *time, uint16_t *date, uint32_t *s
 	if (date) *date = 0;
 	if (size) *size = 0;
 
-	stat64 *st = getPathStat(path);
+	stat *st = getPathStat(path);
 	if (!st) return 0;
 
 	tm *t = localtime(&st->st_mtime);
@@ -1014,7 +1014,7 @@ static int process_request(void *reqres_buffer)
 				{
 					memcpy(&de, de2, sizeof(dirent64));
 					sprintf(str, "%s/%s", path, de.d_name);
-					stat64 *st = getPathStat(str);
+					stat *st = getPathStat(str);
 
 					if (st && cmp_name(de.d_name, flt))
 					{

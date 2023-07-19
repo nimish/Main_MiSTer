@@ -1,7 +1,6 @@
 #ifndef OFFLOAD_H
 #define OFFLOAD_H
 
-#include <stddef.h>
 #include <functional>
 
 void offload_start();

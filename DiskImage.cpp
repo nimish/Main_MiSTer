@@ -1161,7 +1161,7 @@ void TDiskImage::Open(const char *filename, bool ROnly)
 	if (hfile < 0)
 	{
 		char sbuf[8192];
-		sprintf(sbuf, ERR_OPEN" %s", filename);
+		snprintf(sbuf, sizeof(sbuf), ERR_OPEN" %s", filename);
 		ShowError(sbuf);
 		return;
 	}
@@ -2821,7 +2821,7 @@ bool unpack_td0(unsigned char *data, long &size)
 			td0_src = end_packed_data;
 		}
 	}
-	size = unsigned(td0_dst) - unsigned(data);
+	size = unsigned(td0_dst - data);
 	delete snbuf;
 	return true;
 }

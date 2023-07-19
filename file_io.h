@@ -1,14 +1,10 @@
 #ifndef _FAT16_H_INCLUDED
 #define _FAT16_H_INCLUDED
-
-#include <stdio.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <fcntl.h>
-#include <stdbool.h>
-#include "spi.h"
-
+#include <cstdio>
+#include <sys/dirent.h>
+#include <sys/types.h>
 struct fileZipArchive;
+
 
 struct fileTYPE
 {
@@ -20,8 +16,8 @@ struct fileTYPE
 	int             mode;
 	int             type;
 	fileZipArchive *zip;
-	__off64_t       size;
-	__off64_t       offset;
+	off_t       size;
+	off_t       offset;
 	char            path[1024];
 	char            name[261];
 };
@@ -83,9 +79,9 @@ int  FileOpenEx(fileTYPE *file, const char *name, int mode, char mute = 0, int u
 int  FileOpen(fileTYPE *file, const char *name, char mute = 0);
 void FileClose(fileTYPE *file);
 
-__off64_t FileGetSize(fileTYPE *file);
+off_t FileGetSize(fileTYPE *file);
 
-int FileSeek(fileTYPE *file, __off64_t offset, int origin);
+int FileSeek(fileTYPE *file, off_t offset, int origin);
 int FileSeekLBA(fileTYPE *file, uint32_t offset);
 
 int FileReadAdv(fileTYPE *file, void *pBuffer, int length, int failres = 0);
@@ -97,7 +93,7 @@ int FileCreatePath(const char *dir);
 int FileExists(const char *name, int use_zip = 1);
 int FileCanWrite(const char *name);
 int PathIsDir(const char *name, int use_zip = 1);
-struct stat64* getPathStat(const char *path);
+struct stat* getPathStat(const char *path);
 
 #define SAVE_DIR "saves"
 void FileGenerateSavePath(const char *name, char* out_name, int ext_replace = 1);

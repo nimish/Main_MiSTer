@@ -2,8 +2,6 @@
 #ifndef __MINIMIG_CONFIG_H__
 #define __MINIMIG_CONFIG_H__
 
-#include "../../file_io.h"
-
 #define CONFIG_TURBO     1
 #define CONFIG_NTSC      2
 #define CONFIG_A1000     4

@@ -6,6 +6,7 @@
 
 #ifndef	_RESET_MANAGER_H_
 #define	_RESET_MANAGER_H_
+#include <cstdint>
 
 struct socfpga_reset_manager {
 	uint32_t	status;

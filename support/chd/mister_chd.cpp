@@ -1,12 +1,13 @@
-#include <stdarg.h>
-#include <libchdr/chd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <time.h>
+#include <cstdarg>
+#include <cstring>
+#include <fcntl.h>
+
+#include "libchdr/chd.h"
+#include "libchdr/cdrom.h"
+
 #include "../../file_io.h"
 #include "../../cd.h"
+
 #include "mister_chd.h"
 
 void lba_to_hunkinfo(chd_file *chd_f, int lba, int *hunknumber, int *hunkoffset)
@@ -23,7 +24,7 @@ int mister_chd_log(const char *format, ...)
 	char logline[1024];
 	va_list args;
 	va_start(args, format);
-	vsprintf(logline, format, args);
+	vsnprintf(logline, sizeof(logline), format, args);
 	va_end(args);
 	return printf("\x1b[32m%s\x1b[0m", logline);
 }

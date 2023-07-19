@@ -1,7 +1,7 @@
 #ifndef SPI_H
 #define SPI_H
 
-#include <inttypes.h>
+#include <cstdint>
 #include "fpga_io.h"
 
 #define OSD_HDMI 1

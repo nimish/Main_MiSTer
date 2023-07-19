@@ -1,8 +1,6 @@
-
-#include <stdint.h>
-
 #ifndef FPGAIO_H
 #define FPGAIO_H
+#include <cstdint>
 
 #define BUTTON_OSD  1
 #define BUTTON_USR  2
@@ -23,6 +21,7 @@ void fpga_spi_fast_block_read_be(uint16_t *buf, uint32_t length);
 void fpga_set_led(uint32_t on);
 int  fpga_get_buttons();
 int fpga_get_io_type();
+void fpga_reboot(int cold);
 
 void fpga_core_reset(int reset);
 void fpga_core_write(uint32_t offset, uint32_t value);
@@ -35,7 +34,6 @@ int fpga_get_io_version();
 
 int fpga_load_rbf(const char *name, const char *cfg = 0, const char *xml = 0);
 
-void reboot(int cold);
 void app_restart(const char *path, const char *xml = 0);
 char *getappname();
 

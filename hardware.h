@@ -1,8 +1,7 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
-#include <inttypes.h>
-#include <stdio.h>
+#include <cstdint>
 
 unsigned long GetTimer(unsigned long offset);
 unsigned long CheckTimer(unsigned long t);

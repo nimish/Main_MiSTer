@@ -6,10 +6,9 @@
 #ifndef STR_UTIL_H
 #define STR_UTIL_H
 
-#include <stddef.h>
-#include <stdarg.h>
-#include <stdio.h>
 
+#include <cstdarg>
+#include <cstddef>
 int str_tokenize(char *s, const char *delim, char **tokens, int max_tokens);
 
 // String copy with guaranteed null termination
