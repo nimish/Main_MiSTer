@@ -11,17 +11,17 @@
     (at your option) any later version.
 */
 
-#include <errno.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <linux/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include <cstdint>
+#include <cstddef>
+#include <cstdio>
+#include <cerrno>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #include "smbus.h"
+
 
 #define I2C_SLAVE                   0x0703
 #define I2C_SMBUS                   0x0720	/* SMBus-level access */

@@ -1,6 +1,8 @@
 #ifndef CD_H
 #define CD_H
 
+#include <cstdint>
+
 #include <libchdr/chd.h>
 #include "file_io.h"
 

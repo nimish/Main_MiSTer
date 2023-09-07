@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "spi.h"
 #include "fpga_io.h"
 

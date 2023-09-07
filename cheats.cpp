@@ -1,14 +1,14 @@
-
-#include "file_io.h"
-#include "user_io.h"
-#include "lib/miniz/miniz.h"
-#include "osd.h"
-#include "cheats.h"
-#include "support.h"
 #include <algorithm>
 #include <dirent.h>
 #include <vector>
 #include <string>
+
+#include "file_io.h"
+#include "miniz.h"
+#include "osd.h"
+#include "user_io.h"
+#include "cheats.h"
+#include "support.h"
 
 struct cheat_rec_t
 {

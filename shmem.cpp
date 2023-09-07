@@ -2,10 +2,8 @@
 #include "shmem.h"
 #include <cstdio>
 #include <cstring>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
 #include <fcntl.h>
+#include <sys/mman.h>
 
 static int memfd = -1;
 
@@ -35,7 +33,7 @@ int shmem_unmap(void* map, uint32_t size)
 {
 	if (munmap(map, size) < 0)
 	{
-		printf("Error: Unable to unmap(0x%X, %d)!\n", (uint32_t)map, size);
+		printf("Error: Unable to unmap(0x%p, %d)!\n", map, size);
 		return 0;
 	}
 
