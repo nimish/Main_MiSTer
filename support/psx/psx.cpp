@@ -4,14 +4,20 @@
 #include <cstring>
 #include <cstdint>
 
+#include "libchdr/chd.h"
+#include "libchdr/cdrom.h"
+
+#include "psx.h"
+#include "mcdheader.h"
+
+#include "../chd/mister_chd.h"
+
+#include "../../cd.h"
 #include "../../file_io.h"
 #include "../../user_io.h"
 #include "../../spi.h"
 #include "../../menu.h"
-#include "psx.h"
-#include "mcdheader.h"
-#include "../../cd.h"
-#include "libchdr/chd.h"
+
 
 static char buf[1024];
 static uint8_t chd_hunkbuf[CD_FRAME_SIZE * CD_FRAMES_PER_HUNK];

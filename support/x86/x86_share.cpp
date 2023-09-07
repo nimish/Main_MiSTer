@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <vector>
 #include <cstdint>
+#include <fcntl.h>
 
 #include "../../user_io.h"
 #include "../../file_io.h"
@@ -91,7 +92,7 @@ static int baselen = 0;
 struct dir_item_t
 {
 	dirent64 de;
-	stat st;
+	struct stat st;
 };
 
 struct lock

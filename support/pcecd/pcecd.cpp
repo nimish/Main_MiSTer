@@ -1,8 +1,9 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
+
+#include <_types/_uint8_t.h>
+#include <cstring>
+#include <unistd.h>
+#include <cstdint>
 
 #include "../../file_io.h"
 #include "../../user_io.h"
@@ -125,7 +126,7 @@ int pcecd_using_cd()
 }
 
 static char buf[1024];
-static char us_sig[] =
+static uint8_t us_sig[] =
 	{ 0x72, 0xA2, 0xC2, 0x04, 0x12, 0xF6, 0xB6, 0xA6,
 	  0x04, 0xA2, 0x36, 0xA6, 0xC6, 0x2E, 0x4E, 0xF6,
 	  0x76, 0x96, 0xC6, 0xCE, 0x34, 0x32, 0x2E, 0x26,
@@ -225,7 +226,7 @@ void pcecd_set_image(int num, const char *filename)
 
 			if (!loaded)
 			{
-				sprintf(buf, "%s/cd_bios.rom", HomeDir(PCECD_DIR));
+				snprintf(buf, sizeof(buf), "%s/cd_bios.rom", HomeDir(PCECD_DIR));
 				loaded = load_bios(buf, filename, sgx);
 			}
 

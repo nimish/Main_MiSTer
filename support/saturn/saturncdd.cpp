@@ -6,7 +6,6 @@
 
 #include "saturn.h"
 #include "../../shmem.h"
-#include "../chd/mister_chd.h"
 
 #define SHMEM_ADDR  0x31000000
 
@@ -136,7 +135,7 @@ int satcdd_t::LoadCUE(const char* filename) {
 
 			if (!strstr(lptr, "BINARY") && !strstr(lptr, "MOTOROLA") && !strstr(lptr, "WAVE"))
 			{
-				FileClose(&this->toc.tracks[this->toc.last].f); 
+				FileClose(&this->toc.tracks[this->toc.last].f);
 #ifdef SATURN_DEBUG
 				printf("\x1b[32mSaturn: unsupported file: %s\n\x1b[0m", fname);
 #endif // SATURN_DEBUG
@@ -477,7 +476,7 @@ void satcdd_t::CommandExec() {
 #endif // SATURN_DEBUG
 		break;
 
-	case SATURN_COMM_READ: 
+	case SATURN_COMM_READ:
 		this->seek_lba = fad - 150 - 4;
 		this->lba = fad - 150 - 4;
 
@@ -497,7 +496,7 @@ void satcdd_t::CommandExec() {
 		printf("\x1b[32mSaturn: ");
 		printf("Command Read Data: FAD = %u, track = %u, speed = %u", fad, this->toc.GetTrackByLBA(this->seek_lba) + 1, this->speed);
 		printf(" (%u)\n\x1b[0m", frame_cnt);
-#endif // SATURN_DEBUG 
+#endif // SATURN_DEBUG
 		break;
 
 	case SATURN_COMM_PAUSE:
@@ -562,7 +561,7 @@ void satcdd_t::Process(uint8_t* time_mode) {
 	msf_t msf = { 0,2,0 };
 	uint8_t idx = 0;
 	uint8_t q = this->lba < this->toc.end && this->toc.tracks[this->track].type ? 0x40 : 0x00;
-		
+
 	if (this->lid_open) {
 		this->state = Open;
 
@@ -1011,8 +1010,8 @@ void satcdd_t::MakeSecureRingData(uint8_t *buf) {
 
 void satcdd_t::ReadData(uint8_t *buf)
 {
-	int offs = 0; 
-	
+	int offs = 0;
+
 	if (this->toc.tracks[this->track].type)
 	{
 		int lba_ = this->lba >= 0 ? this->lba : 0;
@@ -1119,7 +1118,7 @@ int satcdd_t::DataSectorSend(uint8_t* header, int speed)
 
 	buf_num_write++;
 	buf_num_write &= 3;
-	
+
 	uint16_t mode = (speed == 2 ? 0x0101 : 0x0000) | (boot ? 0x0808 : 0x0000) | (buf_num_read << 4) | (buf_num_read << 12);
 
 	buf_num_read++;

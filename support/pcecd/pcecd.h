@@ -1,6 +1,9 @@
 #ifndef PCECD_H
 #define PCECD_H
 
+#include <cstdint>
+#include "../../cd.h"
+
 // CDD command
 #define PCECD_COMM_TESTUNIT			0x00
 #define PCECD_COMM_REQUESTSENSE		0x03
@@ -50,8 +53,6 @@
 #define PCECD_CDDAMODE_LOOP			0x01
 #define PCECD_CDDAMODE_INTERRUPT	0x02
 #define PCECD_CDDAMODE_NORMAL		0x03
-
-#include "../../cd.h"
 
 typedef struct
 {

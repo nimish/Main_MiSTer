@@ -20,14 +20,11 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <fcntl.h>
-#include <time.h>
-#include <assert.h>
+#include <cassert>
+#include <cstring>
+#include <cstdint>
+
+#include "uef_reader.h"
 
 #include "../../file_io.h"
 #include "../../user_io.h"
