@@ -8,7 +8,7 @@
 #ifndef	_FPGA_MANAGER_H_
 #define	_FPGA_MANAGER_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 struct socfpga_fpga_manager {
 	/* FPGA Manager Module */

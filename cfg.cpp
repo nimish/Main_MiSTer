@@ -2,12 +2,14 @@
 // 2015, rok.krajnc@gmail.com
 // 2017+, Sorgelig
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <inttypes.h>
-#include <ctype.h>
+#include <cstdarg>
+#include <cstdlib>
+#include <cctype>
+#include <cstdint>
+#include <strings.h>
+#include <dirent.h>
+
+
 #include "cfg.h"
 #include "debug.h"
 #include "file_io.h"

@@ -2,12 +2,12 @@
 // 2019, Aitor Gomez Garcia (spark2k06@gmail.com)
 // Thanks to Sorgelig and BBond007 for their help and advice in the development of this feature.
 
-#include "file_io.h"
-#include "cfg.h"
-#include "fpga_io.h"
 #include <cstring>
 #include <dirent.h>
 
+#include "file_io.h"
+#include "cfg.h"
+#include "fpga_io.h"
 
 extern int xml_load(const char *xml);
 int16_t btimeout;

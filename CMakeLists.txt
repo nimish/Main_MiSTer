@@ -97,4 +97,4 @@ target_include_directories( mister PRIVATE
     lib/bluetooth
 )
 
-target_compile_definitions(mister PRIVATE _LARGEFILE64_SOURCE)
+target_compile_definitions(mister PRIVATE _LARGEFILE64_SOURCE _FILE_OFFSET_BITS)

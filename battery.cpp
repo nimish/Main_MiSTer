@@ -24,15 +24,10 @@
  *
  */
 
-#include <time.h>
-#include <stdint.h>
+#include <cstdio>
+#include <cerrno>
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/ioctl.h>
+
 #include "smbus.h"
 #include "battery.h"
 
