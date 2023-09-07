@@ -1,11 +1,7 @@
 // config.c
-
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <cstddef>
+#include <cstring>
+#include <cstdint>
 #include <sys/stat.h>
-#include <dirent.h>
 
 #include "../../hardware.h"
 #include "../../file_io.h"

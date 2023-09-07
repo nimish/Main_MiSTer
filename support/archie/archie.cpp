@@ -1,6 +1,7 @@
 
 #include <cstring>
 #include <ctime>
+#include <cstdint>
 
 #include "../../hardware.h"
 #include "../../user_io.h"

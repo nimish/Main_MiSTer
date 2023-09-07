@@ -1,6 +1,8 @@
 #ifndef SATURN_H
 #define SATURN_H
 
+#include <cstdint>
+
 #include "../../cd.h"
 
 //#define SATURN_DEBUG				1

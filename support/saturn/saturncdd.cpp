@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <time.h>
+
+#include <cstdlib>
+#include <cstring>
 
 #include "saturn.h"
 #include "../../shmem.h"

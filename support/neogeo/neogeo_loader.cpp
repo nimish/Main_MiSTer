@@ -1,19 +1,19 @@
 // Part of Neogeo_MiSTer
 // (C) 2019 Sean 'furrtek' Gonsalves
 
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <time.h>   // clock_gettime, CLOCK_REALTIME
-#include <unistd.h>
 #include "neogeo_loader.h"
 #include "neogeocd.h"
+
+#include "../../file_io.h"
 #include "../../sxmlc.h"
 #include "../../user_io.h"
 #include "../../fpga_io.h"
 #include "../../menu.h"
 #include "../../shmem.h"
 #include "../../spi.h"
+#include <cstdlib>
+#include <cstring>
+#include <unistd.h>
 
 struct NeoFile
 {
@@ -1232,7 +1232,7 @@ int neogeo_romset_tx(char* name, int cd_en)
 					neogeo_tx(home, "sp-s2.sp1", NEO_FILE_RAW, 0, 0, 0x20000);
 			}
 		} else {
-			sprintf(full_path, "%s/uni-bioscd.rom", home);
+			snprintf(full_path, sizeof(full_path), "%s/uni-bioscd.rom", home);
 			if (!(mask & 0x8000) && FileExists(full_path)) {
 				neogeo_tx(home, "uni-bioscd.rom", NEO_FILE_RAW, 0, 0, 0x80000);
 			} else if (!system_cdz) {

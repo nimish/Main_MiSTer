@@ -31,8 +31,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "../../hardware.h"
 #include "sharpmz.h"
 #include "../../osd.h"
@@ -91,7 +93,7 @@ int sharpmz_file_write(fileTYPE *file, const char *fileName)
 
 
 
-    sprintf(fullPath, "%s/%s", directoryPath, fileName);
+    snprintf(fullPath, sizeof(fullPath), "%s/%s", directoryPath, fileName);
 
     const int mode = O_RDWR | O_CREAT | O_TRUNC | O_SYNC;   // No longer required as FileOpenEx has changed.  | S_IRWXU | S_IRWXG | S_IRWXO;
     ret = FileOpenEx(file, fullPath, mode);
@@ -186,32 +188,32 @@ int sharpmz_reset_config(short setStatus)
     // Set the ROMs to known values.
     for(i=0; i < MAX_MZMACHINES; i++)
     {
-        sprintf(buf, "%s_mrom.ROM",       MZMACHINES[i]);
+        snprintf(buf, sizeof(buf), "%s_mrom.ROM",       MZMACHINES[i]);
         strcpy(config.romMonitor[i][MONITOR].romFileName, buf);
         config.romMonitor[i][MONITOR].romEnabled     = 0;
         config.romMonitor[i][MONITOR].loadAddr       = MZLOADADDR[MROM_IDX][i];
         config.romMonitor[i][MONITOR].loadSize       = MZLOADSIZE[MROM_IDX][i];
-        sprintf(buf, "%s_80c_mrom.ROM",   MZMACHINES[i]);
+        snprintf(buf, sizeof(buf), "%s_80c_mrom.ROM",   MZMACHINES[i]);
         strcpy(config.romMonitor[i][MONITOR_80C].romFileName, buf);
         config.romMonitor[i][MONITOR_80C].romEnabled = 0;
         config.romMonitor[i][MONITOR_80C].loadAddr   = MZLOADADDR[MROM_80C_IDX][i];
         config.romMonitor[i][MONITOR_80C].loadSize   = MZLOADSIZE[MROM_80C_IDX][i];
-        sprintf(buf, "%s_cgrom.ROM",      MZMACHINES[i]);
+        snprintf(buf, sizeof(buf), "%s_cgrom.ROM",      MZMACHINES[i]);
         strcpy(config.romCG[i].romFileName, buf);
         config.romCG[i].romEnabled                   = 0;
         config.romCG[i].loadAddr                     = MZLOADADDR[CGROM_IDX][i];
         config.romCG[i].loadSize                     = MZLOADSIZE[CGROM_IDX][i];
-        sprintf(buf, "%s_keymap.ROM",     MZMACHINES[i]);
+        snprintf(buf, sizeof(buf), "%s_keymap.ROM",     MZMACHINES[i]);
         strcpy(config.romKeyMap[i].romFileName, buf);
         config.romKeyMap[i].romEnabled               = 0;
         config.romKeyMap[i].loadAddr                 = MZLOADADDR[KEYMAP_IDX][i];
         config.romKeyMap[i].loadSize                 = MZLOADSIZE[KEYMAP_IDX][i];
-        sprintf(buf, "%s_user.ROM",       MZMACHINES[i]);
+        snprintf(buf, sizeof(buf), "%s_user.ROM",       MZMACHINES[i]);
         strcpy(config.romUser[i].romFileName, buf);
         config.romUser[i].romEnabled                 = 0;
         config.romUser[i].loadAddr                   = MZLOADADDR[USERROM_IDX][i];
         config.romUser[i].loadSize                   = MZLOADSIZE[USERROM_IDX][i];
-        sprintf(buf, "%s_fdc.ROM",        MZMACHINES[i]);
+        snprintf(buf, sizeof(buf), "%s_fdc.ROM",        MZMACHINES[i]);
         strcpy(config.romFDC[i].romFileName, buf);
         config.romFDC[i].romEnabled                  = 0;
         config.romFDC[i].loadAddr                    = MZLOADADDR[FDCROM_IDX][i];
