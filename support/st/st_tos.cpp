@@ -1,13 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdint>
 
 #include "../../hardware.h"
-#include "../../menu.h"
 #include "../../file_io.h"
 #include "../../debug.h"
 #include "../../user_io.h"
-#include "../../fpga_io.h"
+
 #include "st_tos.h"
 
 #define ST_WRITE_MEMORY 0x08

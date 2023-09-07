@@ -96,3 +96,5 @@ target_include_directories( mister PRIVATE
     lib/flac/include
     lib/bluetooth
 )
+
+target_compile_definitions(mister PRIVATE _LARGEFILE64_SOURCE)

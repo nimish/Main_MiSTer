@@ -12,21 +12,11 @@
 #include "spi.h"
 #include "user_io.h"
 
-#if 0
-	#define dbg_printf     printf
-	#define dbg_print_regs ide_print_regs
-	#define dbg_hexdump    hexdump
-#else
-	#define dbg_printf(...)   void()
-	#define dbg_print_regs    void
-	#define dbg_hexdump(...)  void()
-#endif
+#define dbg_printf(...)   void()
+#define dbg_print_regs    void
+#define dbg_hexdump(...)  void()
 
-#if 0
-	#define dbg2_printf     printf
-#else
-	#define dbg2_printf(...)   void()
-#endif
+#define dbg2_printf(...)   void()
 
 #define IDE0_BASE 0xF000
 #define IDE1_BASE 0xF100

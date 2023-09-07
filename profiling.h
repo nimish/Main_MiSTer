@@ -1,7 +1,7 @@
 #ifndef PROFILING_H
 #define PROFILING_H 1
 
-#include <inttypes.h>
+#include <cstdint>
 
 #ifdef PROFILING
 
@@ -43,7 +43,7 @@ struct ProfilingScopedEvent
 
 #else // PROFILING
 
-#define PROFILE_SCOPE(name) 
+#define PROFILE_SCOPE(name)
 #define PROFILE_FUNCTION()
 #define SPIKE_SCOPE(name, us)
 #define SPIKE_FUNCTION(us)

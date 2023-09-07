@@ -6,6 +6,7 @@
 #include "cfg.h"
 #include "fpga_io.h"
 #include <cstring>
+#include <dirent.h>
 
 
 extern int xml_load(const char *xml);

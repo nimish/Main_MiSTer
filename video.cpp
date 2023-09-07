@@ -8,13 +8,13 @@
 #include <sys/ioctl.h>
 #include <linux/vt.h>
 #include <fcntl.h>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <math.h>
 
 #include "hardware.h"
-#include "sxmlc.h"
 #include "user_io.h"
 #include "spi.h"
 #include "cfg.h"

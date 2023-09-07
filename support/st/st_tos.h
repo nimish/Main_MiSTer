@@ -1,7 +1,7 @@
 #ifndef __ST_TOS_H__
 #define __ST_TOS_H__
 
-#include "../../file_io.h"
+#include <cstdint>
 
 // tos sysconfig bits:
 // 0     - RESET

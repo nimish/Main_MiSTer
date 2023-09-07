@@ -128,7 +128,7 @@ static bool detect_rom_settings(const char* lookup_hash)
 	fileTextReader reader = {};
 
 	char file_path[1024];
-	sprintf(file_path, "%s/N64-database.txt", HomeDir());
+	snprintf(file_path, sizeof(file_path), "%s/N64-database.txt", HomeDir());
 
 	if (!FileOpenTextReader(&reader, file_path))
 	{

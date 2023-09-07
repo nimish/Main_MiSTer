@@ -24,20 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <fcntl.h>
-#include <sys/statvfs.h>
-#include <time.h>
-
 #include <map>
 #include <string>
+#include <sys/stat.h>
 #include <vector>
+#include <cstdint>
 
-#include "../../hardware.h"
 #include "../../user_io.h"
 #include "../../file_io.h"
 #include "../../cfg.h"
@@ -291,7 +283,7 @@ static uint32_t get_attr(char *path, uint16_t *time, uint16_t *date, uint32_t *s
 	if (date) *date = 0;
 	if (size) *size = 0;
 
-	stat *st = getPathStat(path);
+	struct stat *st = getPathStat(path);
 	if (!st) return 0;
 
 	tm *t = localtime(&st->st_mtime);
@@ -1014,7 +1006,7 @@ static int process_request(void *reqres_buffer)
 				{
 					memcpy(&de, de2, sizeof(dirent64));
 					sprintf(str, "%s/%s", path, de.d_name);
-					stat *st = getPathStat(str);
+					struct stat *st = getPathStat(str);
 
 					if (st && cmp_name(de.d_name, flt))
 					{

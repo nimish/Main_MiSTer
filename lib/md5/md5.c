@@ -15,31 +15,6 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
-/* This code was modified in 1997 by Jim Kingdon of Cyclic Software to
-   not require an integer type which is exactly 32 bits.  This work
-   draws on the changes for the same purpose by Tatu Ylonen
-   <ylo@cs.hut.fi> as part of SSH, but since I didn't actually use
-   that code, there is no copyright issue.  I hereby disclaim
-   copyright in any changes I have made; this code remains in the
-   public domain.  */
-#define STDC_HEADERS 1
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#if HAVE_STRING_H || STDC_HEADERS
-#include <string.h>	/* for memcpy() */
-#endif
-
-/* Add prototype support.  */
-#ifndef PROTO
-#if defined (USE_PROTOTYPES) ? USE_PROTOTYPES : defined (__STDC__)
-#define PROTO(ARGS) ARGS
-#else
-#define PROTO(ARGS) ()
-#endif
-#endif
 
 #include "md5.h"
 
@@ -50,17 +25,15 @@
    surprised if they were a performance bottleneck for MD5.  */
 
 static uint32
-getu32 (addr)
-     const unsigned char *addr;
+getu32 (const unsigned char *addr)
 {
 	return (((((unsigned long)addr[3] << 8) | addr[2]) << 8)
 		| addr[1]) << 8 | addr[0];
 }
 
-static void
-putu32 (data, addr)
-     uint32 data;
-     unsigned char *addr;
+static void putu32(
+     uint32 data,
+     unsigned char *addr)
 {
 	addr[0] = (unsigned char)data;
 	addr[1] = (unsigned char)(data >> 8);
@@ -73,8 +46,8 @@ putu32 (data, addr)
  * initialization constants.
  */
 void
-MD5Init(ctx)
-     struct MD5Context *ctx;
+MD5Init(struct MD5Context *ctx)
+
 {
 	ctx->buf[0] = 0x67452301;
 	ctx->buf[1] = 0xefcdab89;

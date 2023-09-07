@@ -33,10 +33,10 @@ as rotated copies of the first 128 entries.  -- AMR
 2009-08-23 - adapted ConfigIDE() - support for 2 hardfiles
 */
 
-#include <time.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <ctime>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #include "osd.h"
 #include "spi.h"
@@ -652,7 +652,7 @@ void ScrollReset(int idx)
 static char lastcorename[261 + 10] = "CORE";
 void OsdCoreNameSet(const char* str)
 {
-	sprintf(lastcorename, "%s", str);
+	snprintf(lastcorename, sizeof(lastcorename), "%s", str);
 }
 
 char* OsdCoreNameGet()

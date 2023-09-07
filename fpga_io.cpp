@@ -341,7 +341,7 @@ static int socfpga_load(const void *rbf_data, size_t rbf_size)
 {
 	unsigned long status;
 
-	if ((uint32_t)rbf_data & 0x3) {
+	if ((uint64_t)rbf_data & 0x3) {
 		printf("FPGA: Unaligned data, realign to 32bit boundary.\n");
 		return -EINVAL;
 	}

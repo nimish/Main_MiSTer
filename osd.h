@@ -1,7 +1,7 @@
 #ifndef OSD_H_INCLUDED
 #define OSD_H_INCLUDED
 
-#include <inttypes.h>
+#include <cstdint>
 
 // some constants
 #define DISABLE_KEYBOARD 0x02        // disable keyboard while OSD is active

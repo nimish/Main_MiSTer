@@ -5,31 +5,18 @@
 #include "osd.h"
 #include "cheats.h"
 #include "support.h"
+#include <algorithm>
 #include <dirent.h>
 #include <vector>
+#include <string>
 
 struct cheat_rec_t
 {
-	bool enabled;
-	char name[256];
-	int cheatSize;
-	char *cheatData;
+	bool enabled{false};
+	std::string name{""};
+	int cheatSize{0};
+	char *cheatData{NULL};
 
-	cheat_rec_t()
-	{
-		this->enabled = false;
-		this->cheatData = NULL;
-		this->cheatSize = 0;
-		memset(name, 0, sizeof(name));
-	}
-
-	~cheat_rec_t()
-	{
-		if (this->cheatData)
-		{
-			delete[] this->cheatData;
-		}
-	}
 };
 
 typedef std::vector<cheat_rec_t> CheatVector;
@@ -43,11 +30,10 @@ struct CheatComp
 {
 	bool operator()(const cheat_rec_t& ce1, const cheat_rec_t& ce2)
 	{
-		int len1 = strlen(ce1.name);
-		int len2 = strlen(ce2.name);
+		auto len1 = ce1.name.size();
+		auto len2 = ce2.name.size();
 
-		int len = (len1 < len2) ? len1 : len2;
-		int ret = strncasecmp(ce1.name, ce2.name, len);
+		int ret = strncasecmp(ce1.name.c_str(), ce2.name.c_str(), std::max(len1, len2));
 		if (!ret)
 		{
 			return len1 < len2;
@@ -233,7 +219,7 @@ void cheats_init(const char *rom_path, uint32_t romcrc)
 	for (size_t i = 0; i < mz_zip_reader_get_num_files(z); i++)
 	{
 		cheat_rec_t ch = {};
-		mz_zip_reader_get_filename(z, i, ch.name, sizeof(ch.name));
+		mz_zip_reader_get_filename(z, i, const_cast<char *>(ch.name.c_str()), ch.name.size());
 
 		if (mz_zip_reader_is_file_a_directory(z, i))
 		{
@@ -346,7 +332,8 @@ void cheats_scroll_name()
 	name[0] = 32;
 	name[1] = cheats[iSelectedEntry].enabled ? 0x1a : 0x1b;
 	name[2] = 32;
-	strcpy(name + 3, cheats[iSelectedEntry].name);
+
+	cheats[iSelectedEntry].name = name+3;
 
 	len = strlen(name); // get name length
 	if (len > 3 && !strncasecmp(name + len - 3, ".gg", 3)) len -= 3;
@@ -374,7 +361,7 @@ void cheats_print()
 			s[0] = 32;
 			s[1] = cheats[k].enabled ? 0x1a : 0x1b;
 			s[2] = 32;
-			strcpy(s + 3, cheats[k].name);
+			cheats[k].name = s+3;
 
 			len = strlen(s); // get name length
 			if (len > 3 && !strncasecmp(s + len - 3, ".gg", 3)) len -= 3;
@@ -465,7 +452,7 @@ void cheats_toggle()
 			cheats[iSelectedEntry].cheatSize = 0;
 		}
 
-		snprintf(filename, sizeof(filename), "%s/%s", cheat_zip, cheats[iSelectedEntry].name);
+		snprintf(filename, sizeof(filename), "%s/%s", cheat_zip, cheats[iSelectedEntry].name.c_str());
 		if (FileOpen(&f, filename))
 		{
 			int len = f.size;
